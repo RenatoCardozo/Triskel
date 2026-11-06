@@ -1,7 +1,7 @@
 # Triskel · Blueprint do Render (plano gratuito) para a DEMONSTRAÇÃO online.
 # Passo a passo em docs/DEPLOY.md. Os nomes abaixo (prefixo "triskel-rc-") definem as URLs https://<nome>.onrender.com.
 # Se algum nome já estiver em uso no Render, troque o prefixo em TODAS as ocorrências deste arquivo antes de aplicar.
-# Banco: MySQL externo (Aiven free) informado em DATABASE_URL; o Render não tem MySQL gratuito.
+# Banco: MySQL/MariaDB gratuito de outro provedor (ver docs/DEPLOY.md), informado em DATABASE_URL; o Render não tem MySQL gratuito.
 services:
   # ── API ────────────────────────────────────────────────────────────────────────
   - type: web
@@ -16,8 +16,9 @@ services:
     envVars:
       - { key: NODE_ENV, value: production }
       - { key: PORT, value: "10000" }
-      - { key: DATABASE_URL, sync: false }      # mysql://usuario:senha@host:porta/banco (Service URI da Aiven)
-      - { key: DATABASE_SSL, value: "true" }
+      - { key: DATABASE_URL, sync: false }      # mysql://usuario:senha@host:porta/banco (senha com símbolos precisa de URL-encode)
+      - { key: DATABASE_SSL, value: "true" }   # mude para false só se o provedor não aceitar TLS
+      - { key: DATABASE_POOL_SIZE, value: "3" }  # planos gratuitos limitam as conexões
       - { key: PUBLIC_API_URL, value: https://triskel-rc-api.onrender.com }
       - { key: PUBLIC_WEB_URL, value: https://triskel-rc-web.onrender.com }
       - { key: INTERNAL_API_URL, value: https://triskel-rc-api.onrender.com }   # o video-ai baixa o vídeo por aqui

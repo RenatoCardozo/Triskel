@@ -10,7 +10,7 @@ function adapterFromUrl(raw: string) {
     user: decodeURIComponent(u.username),
     password: decodeURIComponent(u.password),
     database: u.pathname.slice(1),
-    connectionLimit: 10,
+    connectionLimit: env.DATABASE_POOL_SIZE,
     timezone: 'Z',
     ssl: env.DATABASE_SSL ? (env.DATABASE_CA_CERT ? { ca: env.DATABASE_CA_CERT.replace(/\\n/g, '\n') } : { rejectUnauthorized: false }) : undefined,
   })

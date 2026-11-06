@@ -53,7 +53,7 @@ Com `SEED_ON_START=true`, entre com `marjorie@email.com` (criadora), `contato@do
 
 ### Hospedagem gratuita (demonstração)
 
-`render.yaml` + [`docs/DEPLOY.md`](docs/DEPLOY.md): Render (5 serviços) e MySQL gratuito da Aiven. Nessa hospedagem o back envia o e-mail por HTTP (`MAIL_TRANSPORT=http`) em vez de SMTP, e a conexão com o banco usa TLS (`DATABASE_SSL=true`).
+`render.yaml` + [`docs/DEPLOY.md`](docs/DEPLOY.md): Render (5 serviços) e um MySQL/MariaDB gratuito (sugestão: Filess.io). Nessa hospedagem o back envia o e-mail por HTTP (`MAIL_TRANSPORT=http`) em vez de SMTP, e a conexão com o banco usa TLS (`DATABASE_SSL=true`).
 
 ### Sem Docker (desenvolvimento)
 

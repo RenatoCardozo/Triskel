@@ -8,6 +8,8 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
   /** true: conexão TLS com o banco (provedores gerenciados exigem). Com DATABASE_CA_CERT o certificado é verificado; sem ele só criptografa. */
   DATABASE_SSL: bool.default(false),
+  /** Conexões simultâneas com o banco. Planos gratuitos limitam (ex.: 3 a 5); reduza se aparecer "too many connections". */
+  DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(50).default(10),
   /** PEM da CA do provedor (opcional). Aceita quebras de linha reais ou "\n" literal. */
   DATABASE_CA_CERT: z.string().optional(),
   PUBLIC_API_URL: z.string().default('http://localhost:4000'),
