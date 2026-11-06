@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triskel Pay · painel do gateway simulado</title>
+  <link rel="stylesheet" href="/ui/app.css">
+</head>
+<body>
+  <header>
+    <span class="logo" aria-hidden="true">&#10086;</span>
+    <div><h1>Triskel Pay</h1><p>Gateway simulado · nenhum valor real é movimentado</p></div>
+    <form id="key" class="key" autocomplete="off"><label>Chave do painel <input id="adm" type="password" placeholder="PAYSIM_ADMIN_KEY" required></label><button class="bt">Entrar</button></form>
+  </header>
+  <main id="main" hidden>
+    <p id="msg" role="status" class="msg"></p>
+    <section><h2>Cobranças</h2><p class="hint">Pix aguardando pagamento: simule o banco aqui. Cartões de teste são resolvidos na hora pelo número.</p><div id="charges" class="tbl"></div></section>
+    <section><h2>Saques (Pix enviado ao criador)</h2><p class="hint">Em modo automático concluem sozinhos; com PAYOUT_AUTO=false decida aqui.</p><div id="payouts" class="tbl"></div></section>
+    <section><h2>Webhooks enviados</h2><p class="hint">Assinados com HMAC-SHA256 e retentados com backoff (1 s, 2 s, 4 s...).</p><div id="events" class="tbl"></div></section>
+    <section class="tests"><h2>Cartões de teste</h2>
+      <table><tbody>
+        <tr><td><code>4111 1111 1111 1111</code></td><td>Visa · aprovado</td></tr>
+        <tr><td><code>5555 5555 5555 4444</code></td><td>Mastercard · aprovado</td></tr>
+        <tr><td><code>4000 0000 0000 3220</code></td><td>Pede 3-D Secure (código 123456, 3 tentativas)</td></tr>
+        <tr><td><code>4000 0000 0000 0002</code></td><td>Recusado pelo banco (05)</td></tr>
+        <tr><td><code>4000 0000 0000 9995</code></td><td>Saldo ou limite insuficiente (51)</td></tr>
+        <tr><td><code>4000 0000 0000 0069</code></td><td>Cartão vencido (54)</td></tr>
+        <tr><td><code>4000 0000 0000 0127</code></td><td>CVV incorreto (N7)</td></tr>
+      </tbody></table><p class="hint">Use validade futura e qualquer CVV.</p>
+    </section>
+  </main>
+  <script src="/ui/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+.env
+.env.*
+!.env.example
+uploads
+*.db
+*.db-*
+data
+*.tsbuildinfo
+test-results
+playwright-report
+back/src/generated

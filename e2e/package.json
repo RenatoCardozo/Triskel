@@ -1,0 +1,8 @@
+{
+  "name": "triskel-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Roteiro E2E do fluxo completo (Playwright) contra a stack em execução.",
+  "scripts": { "e2e": "node e2e.mjs", "shots": "node shots.mjs" },
+  "dependencies": { "playwright-core": "1.49.1" }
+}

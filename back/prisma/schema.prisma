@@ -1,0 +1,581 @@
+// Triskel · modelo de dados. Dinheiro sempre em centavos (Int).
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  CREATOR
+  BUSINESS
+  AGENCY
+}
+
+enum EmailCodeKind {
+  VERIFY
+  NEW_EMAIL
+}
+
+enum CampaignStatus {
+  DRAFT
+  OPEN
+}
+
+enum ProposalStatus {
+  OPEN
+  ACCEPTED
+  CONTRACT
+  DECLINED
+  CLOSED
+}
+
+enum ProposalOrigin {
+  INVITE
+  APPLICATION
+}
+
+enum Party {
+  C
+  K
+}
+
+enum MsgBy {
+  C
+  K
+  S
+}
+
+enum TxKind {
+  RECHARGE
+  CONTRACT
+  WITHDRAWAL
+}
+
+enum TxStatus {
+  PENDENTE
+  CONCLUIDO
+  RECUSADO
+  EXPIRADO
+  CUSTODIA
+  LIBERADO
+  PROCESSANDO
+  FALHOU
+}
+
+enum EscrowStatus {
+  HELD
+  RELEASED
+}
+
+enum DeliveryState {
+  PROD
+  IA
+  APROV
+  APROVADO
+  LIBERADO
+}
+
+enum SubmissionKind {
+  VIDEO
+  POST
+}
+
+enum AiStatus {
+  PENDING
+  DONE
+  FAILED
+}
+
+enum CheckState {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum DataRequestKind {
+  EXPORT
+  DELETE
+}
+
+model User {
+  id              String    @id @default(cuid())
+  publicId        String    @unique
+  email           String    @unique
+  passwordHash    String
+  role            Role
+  name            String
+  phone           String?
+  emailVerifiedAt DateTime?
+  visible         Boolean   @default(true)
+  listed          Boolean   @default(false)
+  prefPush        Boolean   @default(true)
+  prefEmail       Boolean   @default(true)
+  prefWeekly      Boolean   @default(false)
+  avatarFileId    String?
+  coverFileId     String?
+  failedLogins    Int       @default(0)
+  lockedUntil     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([listed, role])
+
+  creator   CreatorProfile?
+  company   CompanyProfile?
+  wallet    Wallet?
+  tokens    RefreshToken[]
+  codes     EmailCode[]
+  clients   AgencyClient[]
+  portfolio PortfolioItem[]
+  campaigns Campaign[]
+  asContractor Proposal[] @relation("ContractorProposals")
+  asCreator    Proposal[] @relation("CreatorProposals")
+  moneyTxs  MoneyTx[]
+  reviewsGiven Review[]   @relation("ReviewAuthor")
+  reviewsGot   Review[]   @relation("ReviewTarget")
+  dataRequests DataRequest[]
+  cards     SavedCard[]
+}
+
+model EmailCode {
+  id        String        @id @default(cuid())
+  userId    String
+  kind      EmailCodeKind
+  codeHash  String
+  newEmail  String?
+  expiresAt DateTime
+  attempts  Int           @default(0)
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
+}
+
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       String
+  familyId     String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model CreatorProfile {
+  userId        String   @id
+  cpf           String?
+  birthDate     DateTime? @db.Date
+  gender        String?
+  city          String?
+  uf            String?
+  languages     Json
+  about         String?  @db.Text
+  instagram     String?
+  tiktok        String?
+  youtube       String?
+  followersBand String?
+  networkStats  Json?
+  sizeBand      String?
+  niches        Json
+  formats       Json
+  avgDelivery   String?
+  priceReels    Int?
+  priceStories  Int?
+  priceTiktok   Int?
+  vminCents     Int?
+  vmaxCents     Int?
+  imageUse      String?
+  showPrices    Boolean  @default(true)
+  acceptBelowMin Boolean @default(false)
+  audAges       Json
+  audGender     String?
+  audRegion     String?
+  audInterests  Json
+  nearPelotas   Boolean  @default(false)
+  ratingAvg     Float    @default(0)
+  jobsCount     Int      @default(0)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CompanyProfile {
+  userId        String   @id
+  tradeName     String
+  cnpj          String?
+  responsible   String?
+  foundedAt     DateTime? @db.Date
+  segment       String?
+  size          String?
+  city          String?
+  uf            String?
+  about         String?  @db.Text
+  instagram     String?
+  site          String?
+  channels      Json
+  audAges       Json
+  audGender     String?
+  audRegion     String?
+  audInterests  Json
+  desiredFormats Json
+  budget        String?
+  creatorSizes  Json
+  creatorNiches Json
+  services      Json
+  teamSize      String?
+  clientSegments Json
+  clientsRange  String?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AgencyClient {
+  id        String   @id @default(cuid())
+  agencyId  String
+  name      String
+  segment   String
+  createdAt DateTime @default(now())
+  agency    User     @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  campaigns Campaign[]
+
+  @@index([agencyId])
+}
+
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  creatorId   String
+  title       String
+  description String
+  views       String?
+  createdAt   DateTime @default(now())
+  creator     User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
+}
+
+model Campaign {
+  id            String         @id @default(cuid())
+  ownerId       String
+  clientId      String?
+  brandName     String
+  segment       String
+  name          String
+  product       String
+  objective     String
+  description   String         @db.Text
+  message       String
+  cta           String?
+  data          Json
+  generated     Json
+  requirements  Json
+  valueCents    Int
+  videos        Int
+  creatorsQty   Int
+  deliveryDate  DateTime       @db.Date
+  exclusiveDays Int            @default(0)
+  imageUse      String
+  status        CampaignStatus @default(DRAFT)
+  createdAt     DateTime       @default(now())
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  client        AgencyClient?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  proposals     Proposal[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+model Proposal {
+  id             String         @id @default(cuid())
+  number         Int            @unique @default(autoincrement())
+  campaignId     String
+  contractorId   String
+  creatorId      String
+  status         ProposalStatus @default(OPEN)
+  origin         ProposalOrigin @default(INVITE)
+  brandName      String
+  clientName     String?
+  segment        String
+  exclusiveDays  Int            @default(0)
+  videos         Int            @default(1)
+  campaignName   String
+  objective      String
+  format         String
+  unreadCreator    Boolean      @default(false)
+  unreadContractor Boolean      @default(false)
+  acceptedBy     Party?
+  acceptedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  campaign       Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contractor     User           @relation("ContractorProposals", fields: [contractorId], references: [id], onDelete: Cascade)
+  creator        User           @relation("CreatorProposals", fields: [creatorId], references: [id], onDelete: Cascade)
+  rounds         ProposalRound[]
+  messages       Message[]
+  contract       Contract?
+
+  @@index([contractorId])
+  @@index([creatorId])
+  @@index([campaignId])
+}
+
+model ProposalRound {
+  id           String   @id @default(cuid())
+  proposalId   String
+  seq          Int
+  by           Party
+  valueCents   Int
+  deliveryDate DateTime @db.Date
+  imageUse     String
+  message      String?  @db.Text
+  createdAt    DateTime @default(now())
+  proposal     Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, seq])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  proposalId String
+  by         MsgBy
+  text       String   @db.Text
+  createdAt  DateTime @default(now())
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@index([proposalId])
+}
+
+model Wallet {
+  userId       String   @id
+  balanceCents Int      @default(0)
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ledger       LedgerEntry[]
+}
+
+model MoneyTx {
+  id             String   @id
+  userId         String
+  kind           TxKind
+  status         TxStatus
+  description    String
+  counterparty   String?
+  valueCents     Int
+  feeCents       Int      @default(0)
+  totalCents     Int
+  method         String
+  detail         String
+  message        String?
+  code           String?
+  e2e            String?
+  idempotencyKey String   @unique
+  gatewayRef     String?
+  contractId     String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contract       Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([gatewayRef])
+}
+
+/// Cartão salvo: só a referência do cofre do gateway + dados de exibição. Nunca o número nem o CVV.
+model SavedCard {
+  id         String   @id @default(cuid())
+  userId     String
+  gatewayRef String
+  brand      String
+  last4      String
+  exp        String
+  holder     String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gatewayRef])
+}
+
+model LedgerEntry {
+  id                String   @id @default(cuid())
+  walletUserId      String
+  txId              String
+  kind              String
+  amountCents       Int
+  balanceAfterCents Int
+  createdAt         DateTime @default(now())
+  wallet            Wallet   @relation(fields: [walletUserId], references: [userId], onDelete: Restrict)
+
+  @@index([walletUserId, createdAt])
+  @@index([txId])
+}
+
+model Escrow {
+  id          String       @id @default(cuid())
+  contractId  String       @unique
+  payerId     String
+  creatorId   String
+  amountCents Int
+  status      EscrowStatus @default(HELD)
+  releasedAt  DateTime?
+  createdAt   DateTime     @default(now())
+  contract    Contract     @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId, status])
+  @@index([payerId, status])
+}
+
+model Contract {
+  id                String    @id @default(cuid())
+  number            String    @unique
+  proposalId        String    @unique
+  contractorId      String
+  creatorId         String
+  valueCents        Int
+  feeCents          Int
+  totalCents        Int
+  deliveryDate      DateTime  @db.Date
+  imageUse          String
+  exclusiveDays     Int       @default(0)
+  segment           String
+  brandName         String
+  contractorPaidAt  DateTime
+  snapshot          Json?
+  sha256            String?
+  contractorSig     Json?
+  creatorSig        Json?
+  signedAt          DateTime?
+  pdfKey            String?
+  createdAt         DateTime  @default(now())
+  proposal          Proposal  @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  escrow            Escrow?
+  delivery          Delivery?
+  tx                MoneyTx?
+
+  @@index([contractorId])
+  @@index([creatorId])
+}
+
+model Delivery {
+  id            String        @id @default(cuid())
+  contractId    String        @unique
+  state         DeliveryState @default(PROD)
+  adjustCount   Int           @default(0)
+  adjustComment String?       @db.Text
+  publishUrl    String?
+  publishedAt   DateTime?
+  releasedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  contract      Contract      @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  submissions   Submission[]
+  checks        PublicationCheck[]
+}
+
+model Submission {
+  id          String         @id @default(cuid())
+  deliveryId  String
+  n           Int
+  kind        SubmissionKind
+  fileId      String?
+  fileName    String?
+  fileSize    Int?
+  url         String?
+  durationSec Float?
+  aiStatus    AiStatus       @default(PENDING)
+  aiResult    Json?
+  aiScore     Int?
+  aiOk        Boolean?
+  decision    String?
+  comment     String?        @db.Text
+  createdAt   DateTime       @default(now())
+  delivery    Delivery       @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@unique([deliveryId, n])
+}
+
+model StoredFile {
+  id         String   @id @default(cuid())
+  ownerId    String
+  kind       String
+  storageKey String   @unique
+  originalName String?
+  mime       String
+  size       Int
+  sha256     String
+  createdAt  DateTime @default(now())
+
+  @@index([ownerId])
+}
+
+model PublicationCheck {
+  id         String     @id @default(cuid())
+  deliveryId String
+  url        String
+  state      CheckState @default(PENDING)
+  runAt      DateTime
+  attempts   Int        @default(0)
+  createdAt  DateTime   @default(now())
+  delivery   Delivery   @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@index([state, runAt])
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  authorId     String
+  targetUserId String
+  stars        Int
+  tags         Json
+  comment      String?  @db.Text
+  createdAt    DateTime @default(now())
+  author       User     @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  target       User     @relation("ReviewTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, targetUserId])
+}
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  category    String
+  publishedAt DateTime
+  readMins    Int
+  title       String
+  summary     String   @db.Text
+  paragraphs  Json
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  protocol  String   @unique
+  name      String
+  email     String
+  profile   String
+  subject   String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+model DataRequest {
+  id        String          @id @default(cuid())
+  userId    String
+  kind      DataRequestKind
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WebhookEvent {
+  id         String   @id @default(cuid())
+  source     String
+  eventId    String
+  receivedAt DateTime @default(now())
+
+  @@unique([source, eventId])
+}

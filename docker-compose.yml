@@ -1,0 +1,135 @@
+# Triskel · ambiente completo de demonstração.
+#   1) ./scripts/gen-env.sh        (gera o .env com segredos aleatórios; nada de segredo vai para o repositório)
+#   2) docker compose up --build
+#   3) abra http://localhost:3000
+# Segredos vêm do .env da raiz (variáveis sem valor padrão abaixo falham se faltarem).
+name: triskel
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  mysql:
+    image: mysql:8.4
+    <<: *restart
+    environment:
+      MYSQL_DATABASE: triskel
+      MYSQL_USER: triskel
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?defina MYSQL_PASSWORD no .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?defina MYSQL_ROOT_PASSWORD no .env}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "127.0.0.1:3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  back:
+    build: ./back
+    <<: *restart
+    depends_on:
+      mysql: { condition: service_healthy }
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: mysql://triskel:${MYSQL_PASSWORD}@mysql:3306/triskel
+      PUBLIC_API_URL: http://localhost:4000
+      PUBLIC_WEB_URL: http://localhost:3000
+      INTERNAL_API_URL: http://back:4000
+      CORS_ORIGINS: http://localhost:3000
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?defina JWT_ACCESS_SECRET no .env}
+      CODE_PEPPER: ${CODE_PEPPER:?defina CODE_PEPPER no .env}
+      FILE_TOKEN_SECRET: ${FILE_TOKEN_SECRET:?defina FILE_TOKEN_SECRET no .env}
+      STORAGE_DIR: /app/uploads
+      MAIL_ENABLED: "true"
+      SMTP_HOST: email-sim
+      SMTP_PORT: 2525
+      PAYMENT_API_URL: http://payment-sim:4100
+      PAYMENT_API_KEY: ${PAYSIM_API_KEY:?defina PAYSIM_API_KEY no .env}
+      PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET:?defina PAYMENT_WEBHOOK_SECRET no .env}
+      VIDEOAI_API_URL: http://video-ai:4300
+      VIDEOAI_API_KEY: ${VIDEOAI_API_KEY:?defina VIDEOAI_API_KEY no .env}
+      VIDEOAI_WEBHOOK_SECRET: ${VIDEOAI_WEBHOOK_SECRET:?defina VIDEOAI_WEBHOOK_SECRET no .env}
+      SEED_ON_START: ${SEED_ON_START:-false}
+      SEED_PASSWORD: ${SEED_PASSWORD:-}
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "127.0.0.1:4000:4000"
+
+  front:
+    build:
+      context: ./front
+      args:
+        NEXT_PUBLIC_PAYSIM_URL: http://localhost:4100
+        NEXT_PUBLIC_PAYSIM_PK: ${PAYSIM_PUBLIC_KEY:?defina PAYSIM_PUBLIC_KEY no .env}
+        NEXT_PUBLIC_EMAILSIM_URL: http://localhost:4200
+    <<: *restart
+    depends_on:
+      back: { condition: service_healthy }
+    environment:
+      BACK_URL: http://back:4000
+      APP_ORIGINS: http://localhost:3000
+      # http://localhost não é HTTPS: com COOKIE_SECURE=true o navegador descartaria os cookies de sessão.
+      # Em produção (HTTPS) use true.
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  payment-sim:
+    build: ./payment-sim
+    <<: *restart
+    environment:
+      PORT: 4100
+      PAYSIM_API_KEY: ${PAYSIM_API_KEY}
+      PAYSIM_PUBLIC_KEY: ${PAYSIM_PUBLIC_KEY}
+      PAYSIM_ADMIN_KEY: ${PAYSIM_ADMIN_KEY:?defina PAYSIM_ADMIN_KEY no .env}
+      WEBHOOK_URL: http://back:4000/webhooks/payments
+      WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET}
+      CORS_ORIGINS: http://localhost:3000
+      DB_PATH: /data/payment-sim.db
+    volumes:
+      - paysim-data:/data
+    ports:
+      - "127.0.0.1:4100:4100"
+
+  email-sim:
+    build: ./email-sim
+    <<: *restart
+    environment:
+      SMTP_PORT: 2525
+      WEB_PORT: 4200
+      DB_PATH: /data/email-sim.db
+    volumes:
+      - emailsim-data:/data
+    ports:
+      - "127.0.0.1:4200:4200"
+      - "127.0.0.1:2525:2525"
+
+  video-ai:
+    build: ./video-ai
+    <<: *restart
+    environment:
+      PORT: 4300
+      VIDEOAI_API_KEY: ${VIDEOAI_API_KEY}
+      WEBHOOK_SECRET: ${VIDEOAI_WEBHOOK_SECRET}
+      ALLOWED_FETCH_HOSTS: back:4000
+      ALLOWED_CALLBACK_HOSTS: back:4000
+      DB_PATH: /data/video-ai.db
+      # Opcional: com a chave, a análise usa o modelo; sem ela, usa o analisador local determinístico.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    volumes:
+      - videoai-data:/data
+    ports:
+      - "127.0.0.1:4300:4300"
+
+volumes:
+  mysql-data:
+  uploads:
+  paysim-data:
+  emailsim-data:
+  videoai-data:

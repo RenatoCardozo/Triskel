@@ -1,0 +1,367 @@
+{
+ "f_priv": {
+  "title": "Política de privacidade",
+  "updated": "Última atualização: 5 de novembro de 2026",
+  "summary": [
+   "Coletamos só o necessário para operar a plataforma (LGPD).",
+   "Dados do cartão vão direto ao gateway de pagamento e não ficam guardados na Triskel.",
+   "Você pode acessar, corrigir ou excluir os seus dados quando quiser.",
+   "Não vendemos dados pessoais."
+  ],
+  "sections": [
+   {
+    "t": "1. Quem somos e o que esta política cobre",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "A Triskel é a plataforma que conecta criadores de conteúdo, pequenos negócios e agências. Esta política explica quais dados pessoais tratamos, para quê, com quem compartilhamos e quais são os seus direitos, conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018).",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "2. Dados que coletamos",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     },
+     {
+      "tag": "UL",
+      "text": "Cadastro: nome, e-mail, telefone, data de nascimento, cidade e senha (guardada de forma protegida).Perfil: nichos, redes sociais, alcance, valores, portfólio, fotos de perfil e capa e, no caso de empresas e agências, razão social, CNPJ e segmento.Contratos: propostas, briefings, mensagens de negociação, entregas e avaliações.Pagamentos: CPF ou CNPJ, chave Pix de saque, histórico de transações e saldo da carteira. Números de cartão são tratados pelo gateway de pagamento.Uso: dados técnicos do aparelho, páginas acessadas e preferências, como o tema claro ou escuro.",
+      "items": [
+       "Cadastro: nome, e-mail, telefone, data de nascimento, cidade e senha (guardada de forma protegida).",
+       "Perfil: nichos, redes sociais, alcance, valores, portfólio, fotos de perfil e capa e, no caso de empresas e agências, razão social, CNPJ e segmento.",
+       "Contratos: propostas, briefings, mensagens de negociação, entregas e avaliações.",
+       "Pagamentos: CPF ou CNPJ, chave Pix de saque, histórico de transações e saldo da carteira. Números de cartão são tratados pelo gateway de pagamento.",
+       "Uso: dados técnicos do aparelho, páginas acessadas e preferências, como o tema claro ou escuro."
+      ]
+     },
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "3. Para que usamos os dados",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     },
+     {
+      "tag": "UL",
+      "text": "Criar e manter a sua conta e o seu perfil.Recomendar criadores compatíveis e analisar entregas, com apoio de inteligência artificial.Viabilizar contratos, pagamentos, custódia, liberação e saques.Prevenir fraudes e garantir a segurança da plataforma.Enviar avisos sobre propostas, entregas e pagamentos e responder ao seu suporte.Cumprir obrigações legais e regulatórias.",
+      "items": [
+       "Criar e manter a sua conta e o seu perfil.",
+       "Recomendar criadores compatíveis e analisar entregas, com apoio de inteligência artificial.",
+       "Viabilizar contratos, pagamentos, custódia, liberação e saques.",
+       "Prevenir fraudes e garantir a segurança da plataforma.",
+       "Enviar avisos sobre propostas, entregas e pagamentos e responder ao seu suporte.",
+       "Cumprir obrigações legais e regulatórias."
+      ]
+     },
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "4. Bases legais",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Tratamos dados para a execução do contrato com você, para o cumprimento de obrigações legais, para o nosso legítimo interesse (por exemplo, segurança e melhoria do serviço) e, quando necessário, com o seu consentimento, que pode ser retirado a qualquer momento.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "5. Com quem compartilhamos",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     },
+     {
+      "tag": "UL",
+      "text": "Outra parte do contrato: o criador e o contratante veem o que é necessário para negociar e executar a campanha.Gateway de pagamento e bancos: para processar Pix, cartão e saques.Provedores de tecnologia: hospedagem, envio de e-mails e análise por IA, sob contrato e com dever de sigilo.Autoridades: quando houver obrigação legal ou ordem judicial.",
+      "items": [
+       "Outra parte do contrato: o criador e o contratante veem o que é necessário para negociar e executar a campanha.",
+       "Gateway de pagamento e bancos: para processar Pix, cartão e saques.",
+       "Provedores de tecnologia: hospedagem, envio de e-mails e análise por IA, sob contrato e com dever de sigilo.",
+       "Autoridades: quando houver obrigação legal ou ordem judicial."
+      ]
+     },
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "6. Inteligência artificial",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Usamos IA para recomendar criadores e apoiar a análise das entregas. A IA não decide sozinha: o resultado é um apoio e a decisão final é sempre humana. Você pode pedir a revisão de qualquer decisão feita com apoio de IA.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "7. Por quanto tempo guardamos",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Mantemos os dados enquanto a conta estiver ativa e, depois, pelo prazo necessário para cumprir obrigações legais, resolver disputas e exercer direitos. Depois disso, os dados são excluídos ou anonimizados.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "8. Os seus direitos",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     },
+     {
+      "tag": "UL",
+      "text": "Confirmar que tratamos dados seus e acessá-los.Corrigir dados incompletos ou desatualizados.Pedir anonimização, bloqueio ou exclusão de dados desnecessários.Pedir a portabilidade dos dados.Saber com quem compartilhamos os dados.Retirar o consentimento e pedir a revisão de decisões automatizadas.",
+      "items": [
+       "Confirmar que tratamos dados seus e acessá-los.",
+       "Corrigir dados incompletos ou desatualizados.",
+       "Pedir anonimização, bloqueio ou exclusão de dados desnecessários.",
+       "Pedir a portabilidade dos dados.",
+       "Saber com quem compartilhamos os dados.",
+       "Retirar o consentimento e pedir a revisão de decisões automatizadas."
+      ]
+     },
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "9. Segurança",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Adotamos medidas técnicas e organizacionais para proteger os dados, como controle de acesso, comunicação criptografada e separação dos dados de pagamento. Nenhum sistema é totalmente imune a incidentes; se houver um que afete você, avisaremos nos termos da lei.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "10. Cookies e armazenamento local",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Usamos o armazenamento do navegador apenas para lembrar preferências, como o tema da interface. Não usamos cookies de publicidade.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "11. Crianças e adolescentes",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "A Triskel é voltada a maiores de 18 anos. Não coletamos dados de menores intencionalmente.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "12. Contato do encarregado (DPO)",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Para exercer os seus direitos ou tirar dúvidas, use o Fale Conosco e escolha o assunto “Privacidade e dados (LGPD)”, ou escreva para suporte@triskel.com.br.",
+      "items": null
+     }
+    ]
+   }
+  ],
+  "note": "Textos de demonstração do protótipo. Antes de publicar, passe por revisão jurídica."
+ },
+ "f_termos": {
+  "title": "Termos & condições",
+  "updated": "Última atualização: 5 de novembro de 2026",
+  "summary": [
+   "A Triskel conecta criadores, comércio e agências e organiza todo o processo.",
+   "Contratos têm briefing, prazo, valor, revisões e prazo de uso de imagem definidos.",
+   "O pagamento sai da carteira do contratante, fica em custódia e é liberado depois da aprovação da entrega e da confirmação da publicação.",
+   "A IA apoia as análises, mas a decisão final é humana."
+  ],
+  "sections": [
+   {
+    "t": "1. Aceite dos termos",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Ao criar uma conta ou usar a Triskel, você declara ter lido e aceitado estes Termos de uso e a Política de privacidade. Se não concordar, não use a plataforma.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "2. Quem pode usar",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Maiores de 18 anos e com capacidade civil. Há três perfis: criador de conteúdo, empresa (comércio) e agência. Você é responsável pela veracidade das informações do seu cadastro e deve manter o e-mail validado e a senha em sigilo.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "3. O que a Triskel é, e o que não é",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "A Triskel é uma plataforma de intermediação: aproxima as partes, organiza a negociação e os pagamentos. O contrato de prestação de serviço é firmado entre contratante e criador. A Triskel não é empregadora de criadores nem garante resultados de vendas ou de alcance.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "4. Contratos, entregas e revisões",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     },
+     {
+      "tag": "UL",
+      "text": "Cada contrato define valor, prazo de entrega, número de revisões (2 rodadas por padrão) e quais redes terão o conteúdo.O uso de imagem é incluso por 90 dias; períodos maiores (180 dias ou 12 meses) têm acréscimo combinado no contrato.O criador entrega no prazo e o contratante revisa e aprova ou pede ajustes dentro das rodadas previstas.Exclusividade só vale se estiver descrita no contrato. Depois que o contrato com exclusividade é assinado, a Triskel bloqueia novos contratos do criador com marcas do mesmo ramo (ou de ramos relacionados) durante o período combinado, a partir da data de entrega.O contrato é assinado eletronicamente pelas duas partes dentro da Triskel. Depois das duas assinaturas, a plataforma gera o PDF com as assinaturas digitais, o código de autenticação e o hash SHA-256 do contrato.Toda a negociação (propostas, contrapropostas e mensagens) e todo o contato entre as partes acontecem dentro da Triskel. Telefone, e-mail, links e redes sociais não podem ser trocados antes do contrato.Valor, taxa de serviço de 10% e total aparecem na proposta, na contraproposta e no contrato.",
+      "items": [
+       "Cada contrato define valor, prazo de entrega, número de revisões (2 rodadas por padrão) e quais redes terão o conteúdo.",
+       "O uso de imagem é incluso por 90 dias; períodos maiores (180 dias ou 12 meses) têm acréscimo combinado no contrato.",
+       "O criador entrega no prazo e o contratante revisa e aprova ou pede ajustes dentro das rodadas previstas.",
+       "Exclusividade só vale se estiver descrita no contrato. Depois que o contrato com exclusividade é assinado, a Triskel bloqueia novos contratos do criador com marcas do mesmo ramo (ou de ramos relacionados) durante o período combinado, a partir da data de entrega.",
+       "O contrato é assinado eletronicamente pelas duas partes dentro da Triskel. Depois das duas assinaturas, a plataforma gera o PDF com as assinaturas digitais, o código de autenticação e o hash SHA-256 do contrato.",
+       "Toda a negociação (propostas, contrapropostas e mensagens) e todo o contato entre as partes acontecem dentro da Triskel. Telefone, e-mail, links e redes sociais não podem ser trocados antes do contrato.",
+       "Valor, taxa de serviço de 10% e total aparecem na proposta, na contraproposta e no contrato."
+      ]
+     },
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "5. Pagamentos, carteira e custódia",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     },
+     {
+      "tag": "UL",
+      "text": "Comércio e agência pagam contratos com o saldo da carteira, que pode ser abastecido por Pix ou cartão (mínimo de R$ 20,00 e máximo de R$ 10.000,00 por adição).Sobre o valor do contrato incide uma taxa de serviço de 10%, paga pelo contratante.O valor do contrato fica em custódia e é liberado ao criador quando a entrega é aprovada.O criador pode sacar o saldo disponível por Pix, sem taxa, com valor mínimo de R$ 10,00.No protótipo, o gateway é simulado e nenhum valor real é movimentado.",
+      "items": [
+       "Comércio e agência pagam contratos com o saldo da carteira, que pode ser abastecido por Pix ou cartão (mínimo de R$ 20,00 e máximo de R$ 10.000,00 por adição).",
+       "Sobre o valor do contrato incide uma taxa de serviço de 10%, paga pelo contratante.",
+       "O valor do contrato fica em custódia e é liberado ao criador quando a entrega é aprovada.",
+       "O criador pode sacar o saldo disponível por Pix, sem taxa, com valor mínimo de R$ 10,00.",
+       "No protótipo, o gateway é simulado e nenhum valor real é movimentado."
+      ]
+     },
+     {
+      "tag": "P",
+      "text": "",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "6. Inteligência artificial",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Recomendações de criadores e análises de entrega feitas por IA são apoio à decisão e podem conter erros. A decisão final é sempre das pessoas envolvidas.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "7. Avaliações",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Contratante e criador podem se avaliar ao fim da parceria. As avaliações devem ser verdadeiras e respeitosas, e podem ser removidas se violarem estes termos.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "8. Conduta e conteúdo",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "É proibido: usar dados falsos, burlar pagamentos fora da plataforma para evitar a taxa, publicar conteúdo ilegal, discriminatório ou que viole direitos de terceiros, assediar outros usuários ou tentar fraudar o sistema. O criador responde pelos direitos autorais do que entrega.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "9. Suspensão e encerramento",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Podemos suspender ou encerrar contas que violem estes termos ou a lei, preservando valores em custódia até a resolução. Você pode encerrar a sua conta quando quiser, depois de concluir os contratos em andamento.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "10. Limitação de responsabilidade",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "A Triskel não se responsabiliza por atrasos, falhas ou prejuízos decorrentes da relação entre contratante e criador, nem por indisponibilidades fora do seu controle. Isso não afasta responsabilidades previstas em lei.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "11. Alterações",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Podemos atualizar estes termos. Avisaremos pela plataforma ou por e-mail, e o uso continuado depois do aviso vale como aceite.",
+      "items": null
+     }
+    ]
+   },
+   {
+    "t": "12. Lei aplicável e foro",
+    "blocks": [
+     {
+      "tag": "P",
+      "text": "Estes termos seguem as leis brasileiras. Fica eleito o foro da comarca do domicílio do consumidor, quando aplicável.",
+      "items": null
+     }
+    ]
+   }
+  ],
+  "note": "Textos de demonstração do protótipo. Antes de publicar, passe por revisão jurídica."
+ }
+}

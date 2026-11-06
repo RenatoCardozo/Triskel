@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triskel · caixa de entrada de teste</title>
+  <link rel="stylesheet" href="/ui/app.css">
+</head>
+<body>
+  <header>
+    <span class="logo" aria-hidden="true">&#10086;</span>
+    <div><h1>Caixa de entrada de teste</h1><p>Nenhum e-mail sai de verdade. Tudo que o sistema "envia" aparece aqui.</p></div>
+    <form id="key" class="key" hidden><label>Chave <input id="k" type="password" placeholder="EMAILSIM_API_KEY"></label><button class="bt">Entrar</button></form>
+  </header>
+  <div class="bar">
+    <label class="sr">Buscar<input id="q" type="search" placeholder="Buscar por assunto, remetente ou destinatário"></label>
+    <span id="count" class="cnt" role="status"></span>
+    <button id="clear" class="bt o">Limpar caixa</button>
+  </div>
+  <div class="grid">
+    <ul id="list" class="list" aria-label="Mensagens"></ul>
+    <article id="detail" class="detail" aria-live="polite"><p class="empty">Selecione uma mensagem.</p></article>
+  </div>
+  <script src="/ui/app.js"></script>
+</body>
+</html>
