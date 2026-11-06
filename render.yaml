@@ -17,7 +17,7 @@ services:
       - { key: NODE_ENV, value: production }
       - { key: PORT, value: "10000" }
       - { key: DATABASE_URL, sync: false }      # mysql://usuario:senha@host:porta/banco (senha com símbolos precisa de URL-encode)
-      - { key: DATABASE_SSL, value: "true" }   # mude para false só se o provedor não aceitar TLS
+      - { key: DATABASE_SSL, value: "false" }  # o Filess.io não aceita TLS (ER_SERVER_SSL_DISABLED); use true em provedores que aceitem
       - { key: DATABASE_POOL_SIZE, value: "3" }  # planos gratuitos limitam as conexões
       - { key: PUBLIC_API_URL, value: https://triskel-rc-api.onrender.com }
       - { key: PUBLIC_WEB_URL, value: https://triskel-rc-web.onrender.com }

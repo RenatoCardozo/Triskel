@@ -17,8 +17,7 @@ O banco ocupa pouco: medido localmente em MariaDB 10.11, as migrações e os dad
 **Alternativa: Clever Cloud**, plano DEV do MySQL (gratuito, "somente para testes", sem backup). A página do provedor não informa o tamanho nem o limite de conexões, então confira no painel.
 
 Não consegui conferir, nas páginas dos provedores, se o plano gratuito aceita **triggers**, quantas **conexões** permite e se exige **TLS**. Isso só aparece na primeira subida da API:
-- o Render passa `DATABASE_POOL_SIZE=3` (poucas conexões) e `DATABASE_SSL=true` (criptografa);
-- se o log disser que o servidor não aceita conexão segura, mude `DATABASE_SSL` para `false` no `triskel-rc-api`;
+- o Render passa `DATABASE_POOL_SIZE=3` (poucas conexões) e `DATABASE_SSL=false`. O Filess.io **não aceita TLS** (testado: `ER_SERVER_SSL_DISABLED`), então a conexão com o banco vai sem criptografia: use só dados de demonstração e troque a senha do banco depois. Em um provedor que aceite TLS, use `DATABASE_SSL=true`;
 - se disser "too many connections", diminua `DATABASE_POOL_SIZE` para 2;
 - se recusar os triggers, veja a contingência no fim deste arquivo.
 
@@ -56,7 +55,7 @@ Nomes de serviço são únicos no Render inteiro. Se o Blueprint avisar que algu
 | Sintoma | O que verificar |
 |---|---|
 | `triskel-rc-api` falha ao subir, log com "Banco indisponível" | `DATABASE_URL` incorreta (senha com símbolo sem `%XX`?), banco pausado ou porta errada. |
-| Log com "secure connection" / SSL | O provedor não aceita TLS: `DATABASE_SSL=false`. |
+| Log com `ER_SERVER_SSL_DISABLED` | O provedor não aceita TLS: `DATABASE_SSL=false`. |
 | Log com "too many connections" | Diminua `DATABASE_POOL_SIZE` (já está em 3). |
 | Log da migração com "SUPER privilege", "TRIGGER" ou "binary logging" | O plano gratuito não deixa criar *triggers*. Tente outro provedor; se nenhum aceitar, veja a contingência abaixo. |
 | Erro de certificado ao conectar | Defina no back `DATABASE_CA_CERT` com o certificado da CA do serviço (o provedor costuma oferecê-lo para download). Sem ele, a conexão só é criptografada, sem verificar o servidor. |
