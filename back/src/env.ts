@@ -6,6 +6,10 @@ const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(4000),
   DATABASE_URL: z.string().min(1),
+  /** true: conexão TLS com o banco (provedores gerenciados exigem). Com DATABASE_CA_CERT o certificado é verificado; sem ele só criptografa. */
+  DATABASE_SSL: bool.default(false),
+  /** PEM da CA do provedor (opcional). Aceita quebras de linha reais ou "\n" literal. */
+  DATABASE_CA_CERT: z.string().optional(),
   PUBLIC_API_URL: z.string().default('http://localhost:4000'),
   PUBLIC_WEB_URL: z.string().default('http://localhost:3000'),
   /** URL do back vista pelo video-ai (rede interna do compose) */
@@ -29,6 +33,10 @@ const schema = z.object({
   SMTP_SECURE: bool.default(false),
   MAIL_FROM: z.string().default('Triskel <nao-responda@triskel.com.br>'),
   MAIL_ENABLED: bool.default(true),
+  /** smtp (padrão) ou http: no http o back envia a mensagem MIME bruta para o email-sim (POST /api/ingest). */
+  MAIL_TRANSPORT: z.enum(['smtp', 'http']).default('smtp'),
+  MAIL_HTTP_URL: z.string().default('http://localhost:4200'),
+  MAIL_HTTP_KEY: z.string().optional(),
   PAYMENT_API_URL: z.string().default('http://localhost:4100'),
   PAYMENT_API_KEY: z.string().default('sk_test_triskel'),
   PAYMENT_WEBHOOK_SECRET: z.string().min(16),

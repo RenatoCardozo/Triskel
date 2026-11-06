@@ -10,6 +10,7 @@ const url = new URL(process.env.DATABASE_URL || 'mysql://triskel:triskel@127.0.0
 const conn = await mariadb.createConnection({
   host: url.hostname, port: Number(url.port || 3306), user: decodeURIComponent(url.username),
   password: decodeURIComponent(url.password), database: url.pathname.slice(1), multipleStatements: true,
+  ssl: process.env.DATABASE_SSL === 'true' ? (process.env.DATABASE_CA_CERT ? { ca: process.env.DATABASE_CA_CERT.replace(/\\n/g, '\n') } : { rejectUnauthorized: false }) : undefined,
 })
 await conn.query(`CREATE TABLE IF NOT EXISTS _prisma_migrations (
   id VARCHAR(36) NOT NULL, checksum VARCHAR(64) NOT NULL, finished_at DATETIME(3) NULL,

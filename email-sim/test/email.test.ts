@@ -34,6 +34,17 @@ describe('email-sim', () => {
     expect(dl.headers['content-type']).toBe('application/pdf')
     expect(dl.rawPayload.equals(pdf)).toBe(true)
   })
+  it('recebe a mensagem MIME bruta por HTTP (sem SMTP), com anexo maior que o limite padrão do corpo', async () => {
+    const pdf = Buffer.alloc(200_000, 7)
+    const built = await nodemailer.createTransport({ streamTransport: true, buffer: true, newline: 'unix' }).sendMail({ from: 'Triskel <nao-responda@triskel.com.br>', to: 'eva@example.com', subject: 'Via HTTP', text: 'Código 135790', attachments: [{ filename: 'c.pdf', content: pdf, contentType: 'application/pdf' }] })
+    const r = await app.inject({ method: 'POST', url: '/api/ingest?from=nao-responda@triskel.com.br&to=eva@example.com', headers: { 'content-type': 'message/rfc822' }, payload: built.message as Buffer })
+    expect(r.statusCode).toBe(201)
+    const list = (await app.inject('/api/messages?to=eva@example.com')).json()
+    expect(list.items[0]).toMatchObject({ subject: 'Via HTTP', code: '135790', hasAttachments: true })
+    const m = (await app.inject(`/api/messages/${list.items[0].id}`)).json()
+    expect((await app.inject(m.attachments[0].url)).rawPayload.equals(pdf)).toBe(true)
+    expect((await app.inject({ method: 'POST', url: '/api/ingest', headers: { 'content-type': 'message/rfc822' }, payload: '' })).statusCode).toBe(400)
+  })
   it('mantém só as últimas KEEP_MESSAGES e limpa a caixa', async () => {
     for (let i = 0; i < 4; i++) await tr().sendMail({ from: 'a@b.com', to: 'c@example.com', subject: 'm' + i, text: 'x' })
     expect((await app.inject('/api/messages')).json().total).toBeLessThanOrEqual(3)

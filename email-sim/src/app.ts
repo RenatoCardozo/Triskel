@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { z } from 'zod'
 import { env } from './env'
-import type { Store } from './store'
+import { saveRaw, type Store } from './store'
 
 const eq = (a: string, b: string) => { const x = Buffer.from(a), y = Buffer.from(b); return x.length === y.length && crypto.timingSafeEqual(x, y) }
 const dto = (r: any) => ({ id: r.id, receivedAt: new Date(r.received_at).toISOString(), from: r.from_addr, to: JSON.parse(r.to_addrs) as string[], subject: r.subject, read: !!r.read, code: r.code as string | null, hasAttachments: !!r.att })
@@ -18,6 +18,21 @@ export async function buildApp(db: Store) {
     if (!eq(String(req.headers['x-api-key'] || ''), env.EMAILSIM_API_KEY)) return reply.status(401).send({ error: { code: 'UNAUTHORIZED', message: 'Chave inválida.' } })
   })
   app.get('/health', async () => ({ ok: true }))
+
+  /**
+   * Ingestão por HTTP (hospedagem sem SMTP entre serviços): o back envia a mensagem MIME bruta
+   * (Content-Type: message/rfc822) e o envelope por query (?from=&to=a@x,b@y). Protegida pela X-Api-Key (hook acima).
+   */
+  const maxBytes = env.MAX_MESSAGE_MB * 1024 * 1024
+  app.addContentTypeParser('message/rfc822', { parseAs: 'buffer', bodyLimit: maxBytes }, (_req, body, done) => done(null, body))
+  app.post('/api/ingest', { bodyLimit: maxBytes }, async (req, reply) => {
+    if (!env.EMAILSIM_API_KEY && env.REQUIRE_KEY_FOR_INGEST) return reply.status(401).send({ error: { code: 'UNAUTHORIZED', message: 'Defina EMAILSIM_API_KEY para usar a ingestão por HTTP.' } })
+    if (!Buffer.isBuffer(req.body) || !req.body.length) return reply.status(400).send({ error: { code: 'BAD_REQUEST', message: 'Envie a mensagem como message/rfc822.' } })
+    const q = z.object({ from: z.string().max(320).optional(), to: z.string().max(4000).optional() }).parse(req.query)
+    const to = (q.to ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+    const id = await saveRaw(db, req.body, { from: q.from ?? false, to })
+    return reply.status(201).send({ id })
+  })
 
   const SEL = 'SELECT m.*, (SELECT COUNT(*) FROM attachments a WHERE a.message_id = m.id) AS att FROM messages m'
   app.get('/api/messages', async (req) => {

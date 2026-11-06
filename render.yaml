@@ -1,0 +1,120 @@
+# Triskel · Blueprint do Render (plano gratuito) para a DEMONSTRAÇÃO online.
+# Passo a passo em docs/DEPLOY.md. Os nomes abaixo (prefixo "triskel-rc-") definem as URLs https://<nome>.onrender.com.
+# Se algum nome já estiver em uso no Render, troque o prefixo em TODAS as ocorrências deste arquivo antes de aplicar.
+# Banco: MySQL externo (Aiven free) informado em DATABASE_URL; o Render não tem MySQL gratuito.
+services:
+  # ── API ────────────────────────────────────────────────────────────────────────
+  - type: web
+    name: triskel-rc-api
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./back/Dockerfile
+    dockerContext: ./back
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - { key: NODE_ENV, value: production }
+      - { key: PORT, value: "10000" }
+      - { key: DATABASE_URL, sync: false }      # mysql://usuario:senha@host:porta/banco (Service URI da Aiven)
+      - { key: DATABASE_SSL, value: "true" }
+      - { key: PUBLIC_API_URL, value: https://triskel-rc-api.onrender.com }
+      - { key: PUBLIC_WEB_URL, value: https://triskel-rc-web.onrender.com }
+      - { key: INTERNAL_API_URL, value: https://triskel-rc-api.onrender.com }   # o video-ai baixa o vídeo por aqui
+      - { key: CORS_ORIGINS, value: https://triskel-rc-web.onrender.com }
+      - { key: JWT_ACCESS_SECRET, generateValue: true }
+      - { key: CODE_PEPPER, generateValue: true }
+      - { key: FILE_TOKEN_SECRET, generateValue: true }
+      - { key: MAIL_ENABLED, value: "true" }
+      - { key: MAIL_TRANSPORT, value: http }
+      - { key: MAIL_HTTP_URL, value: https://triskel-rc-mail.onrender.com }
+      - key: MAIL_HTTP_KEY
+        fromService: { type: web, name: triskel-rc-mail, envVarKey: EMAILSIM_API_KEY }
+      - { key: PAYMENT_API_URL, value: https://triskel-rc-pay.onrender.com }
+      - key: PAYMENT_API_KEY
+        fromService: { type: web, name: triskel-rc-pay, envVarKey: PAYSIM_API_KEY }
+      - key: PAYMENT_WEBHOOK_SECRET
+        fromService: { type: web, name: triskel-rc-pay, envVarKey: WEBHOOK_SECRET }
+      - { key: VIDEOAI_API_URL, value: https://triskel-rc-ai.onrender.com }
+      - key: VIDEOAI_API_KEY
+        fromService: { type: web, name: triskel-rc-ai, envVarKey: VIDEOAI_API_KEY }
+      - key: VIDEOAI_WEBHOOK_SECRET
+        fromService: { type: web, name: triskel-rc-ai, envVarKey: WEBHOOK_SECRET }
+      - { key: SEED_ON_START, value: "true" }   # popula o banco VAZIO com os dados do protótipo
+      - { key: SEED_PASSWORD, sync: false }     # senha (forte) dos usuários de demonstração
+
+  # ── Front (Next.js) ────────────────────────────────────────────────────────────
+  - type: web
+    name: triskel-rc-web
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./front/Dockerfile
+    dockerContext: ./front
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - { key: PORT, value: "10000" }
+      - { key: BACK_URL, value: https://triskel-rc-api.onrender.com }
+      - { key: APP_ORIGINS, value: https://triskel-rc-web.onrender.com }
+      - { key: COOKIE_SECURE, value: "true" }
+      # NEXT_PUBLIC_* são embutidas no build (o Dockerfile as recebe como ARG).
+      - { key: NEXT_PUBLIC_PAYSIM_URL, value: https://triskel-rc-pay.onrender.com }
+      - { key: NEXT_PUBLIC_PAYSIM_PK, value: pk_test_triskel_demo_publica }   # chave PÚBLICA de teste, igual à PAYSIM_PUBLIC_KEY
+      - { key: NEXT_PUBLIC_EMAILSIM_URL, value: https://triskel-rc-mail.onrender.com }
+
+  # ── Pagamento simulado ─────────────────────────────────────────────────────────
+  - type: web
+    name: triskel-rc-pay
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./payment-sim/Dockerfile
+    dockerContext: ./payment-sim
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - { key: PORT, value: "10000" }
+      - { key: PAYSIM_API_KEY, generateValue: true }
+      - { key: PAYSIM_PUBLIC_KEY, value: pk_test_triskel_demo_publica }
+      - { key: PAYSIM_ADMIN_KEY, generateValue: true }
+      - { key: WEBHOOK_SECRET, generateValue: true }
+      - { key: WEBHOOK_URL, value: https://triskel-rc-api.onrender.com/webhooks/payments }
+      - { key: CORS_ORIGINS, value: https://triskel-rc-web.onrender.com }
+      - { key: DB_PATH, value: /app/data/payment-sim.db }
+      - { key: PIX_AUTOPAY_SECONDS, value: "8" }   # demonstração: o Pix é "pago" sozinho após 8 s
+
+  # ── E-mail simulado (caixa de entrada) ─────────────────────────────────────────
+  - type: web
+    name: triskel-rc-mail
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./email-sim/Dockerfile
+    dockerContext: ./email-sim
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - { key: WEB_PORT, value: "10000" }
+      - { key: SMTP_ENABLED, value: "false" }
+      - { key: REQUIRE_KEY_FOR_INGEST, value: "true" }
+      - { key: EMAILSIM_API_KEY, generateValue: true }
+      - { key: DB_PATH, value: /app/data/email-sim.db }
+
+  # ── Análise de vídeo ───────────────────────────────────────────────────────────
+  - type: web
+    name: triskel-rc-ai
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./video-ai/Dockerfile
+    dockerContext: ./video-ai
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - { key: PORT, value: "10000" }
+      - { key: VIDEOAI_API_KEY, generateValue: true }
+      - { key: WEBHOOK_SECRET, generateValue: true }
+      - { key: ALLOWED_FETCH_HOSTS, value: triskel-rc-api.onrender.com }
+      - { key: ALLOWED_CALLBACK_HOSTS, value: triskel-rc-api.onrender.com }
+      - { key: DB_PATH, value: /app/data/video-ai.db }

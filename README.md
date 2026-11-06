@@ -51,6 +51,10 @@ Com `SEED_ON_START=true`, entre com `marjorie@email.com` (criadora), `contato@do
 
 > O `docker compose` **não foi executado** no ambiente em que isto foi construído (o registro de imagens estava bloqueado). O arquivo foi validado com `docker compose config`; o que rodou foi cada serviço direto no Node, descrito abaixo.
 
+### Hospedagem gratuita (demonstração)
+
+`render.yaml` + [`docs/DEPLOY.md`](docs/DEPLOY.md): Render (5 serviços) e MySQL gratuito da Aiven. Nessa hospedagem o back envia o e-mail por HTTP (`MAIL_TRANSPORT=http`) em vez de SMTP, e a conexão com o banco usa TLS (`DATABASE_SSL=true`).
+
 ### Sem Docker (desenvolvimento)
 
 Requer Node 22, MySQL 8 (ou MariaDB 10.11) e ffmpeg. Em cada pasta: `cp .env.example .env`, ajuste os segredos para que casem entre os serviços (veja os comentários nos `.env.example`) e rode:

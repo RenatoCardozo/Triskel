@@ -12,6 +12,7 @@ function adapterFromUrl(raw: string) {
     database: u.pathname.slice(1),
     connectionLimit: 10,
     timezone: 'Z',
+    ssl: env.DATABASE_SSL ? (env.DATABASE_CA_CERT ? { ca: env.DATABASE_CA_CERT.replace(/\\n/g, '\n') } : { rejectUnauthorized: false }) : undefined,
   })
 }
 
