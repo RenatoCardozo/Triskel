@@ -18,7 +18,7 @@ export function Logo({ href = '/', h = 52 }: { href?: string; h?: number }) {
       <Petals size={Math.round(h * 0.8)} />
       <span style={{ lineHeight: 1 }}>
         <b style={{ fontSize: Math.round(h * 0.52), color: '#2a9fb5', fontWeight: 700, letterSpacing: '-.5px', display: 'block' }}>Triskel</b>
-        <small style={{ whiteSpace: 'nowrap', fontSize: Math.max(6.5, h * 0.125), fontWeight: 700, letterSpacing: '1.4px', color: '#4d8fd0', display: 'block', marginTop: 2 }}>PLATAFORMA DE CRIADORES</small>
+        <small style={{ whiteSpace: 'nowrap', fontSize: Math.max(6.5, h * 0.1), fontWeight: 700, letterSpacing: '1.4px', color: '#4d8fd0', display: 'block', marginTop: 2 }}>PLATAFORMA DE CRIADORES</small>
       </span>
     </Link>
   )

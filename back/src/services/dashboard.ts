@@ -6,6 +6,9 @@ import { listOpportunities, searchCreators } from './search'
 import { reviewCandidates, receivedReviews } from './reviews'
 import { loadProfile } from './profile'
 
+/** Valor do KPI: sem centavos quando inteiro ("R$ 420"), como no protótipo. */
+const brlShort = (cents: number) => (cents % 100 === 0 ? brl(cents).replace(/,00$/, '') : brl(cents))
+
 /** Painel inicial por perfil: KPIs, itens que pedem atenção e uma sugestão (compatibilidade). Os rótulos seguem o protótipo. */
 export async function dashboard(userId: string, role: 'CREATOR' | 'BUSINESS' | 'AGENCY') {
   const prof = await loadProfile(userId)
@@ -25,14 +28,17 @@ export async function dashboard(userId: string, role: 'CREATOR' | 'BUSINESS' | '
       prisma.creatorProfile.findUnique({ where: { userId }, select: { ratingAvg: true } }),
     ])
     const mine = open.filter((p) => p.rounds[p.rounds.length - 1].by === 'K')
-    const active = deliveries.filter((d) => d.state !== 'LIBERADO').length
+    const activeList = deliveries.filter((d) => d.state !== 'LIBERADO')
+    const active = activeList.length
+    const nextDue = activeList.map((d) => d.deliveryDate).filter(Boolean).sort()[0] as string | undefined
     const opp = (await listOpportunities(userId, { ord: 'compat' })).items.find((o) => !o.proposalId && !o.conflict)
     return {
       ...base, role,
       kpis: [
-        { label: 'Propostas novas', value: String(mine.length) }, { label: 'Campanhas ativas', value: String(active) },
-        { label: 'A receber', value: brl(esc._sum.amountCents ?? 0), hint: (esc._sum.amountCents ?? 0) > 0 ? 'Libera após aprovação' : 'Nada pendente' },
-        { label: 'Nota média', value: (cp?.ratingAvg ?? 0) > 0 ? '★ ' + String(cp!.ratingAvg).replace('.', ',') : rec.average === null ? '—' : String(rec.average).replace('.', ','), ...(rec.count ? { hint: `${rec.count} ${rec.count > 1 ? 'avaliações' : 'avaliação'} com comentário` } : {}) },
+        { label: 'Propostas novas', value: String(mine.length), hint: mine.length > 0 ? 'Aguarda a sua resposta' : 'Nada pendente' },
+        { label: active === 1 ? 'Campanha ativa' : 'Campanhas ativas', value: String(active), ...(nextDue ? { hint: `Entrega em ${nextDue.slice(8, 10)}/${nextDue.slice(5, 7)}` } : {}) },
+        { label: 'A receber', value: brlShort(esc._sum.amountCents ?? 0), hint: (esc._sum.amountCents ?? 0) > 0 ? 'Libera após aprovação' : 'Nada pendente' },
+        { label: 'Nota média', value: (cp?.ratingAvg ?? 0) > 0 ? '★ ' + String(cp!.ratingAvg).replace('.', ',') : rec.average === null ? '—' : String(rec.average).replace('.', ','), ...(rec.count ? { hint: `${rec.count} ${rec.count > 1 ? 'avaliações' : 'avaliação'}` } : {}) },
       ],
       attention: [
         ...needDeliveries.slice(0, 2).map((d) => ({ kind: 'delivery' as const, id: d.id, title: !d.signed ? 'Assine o contrato' : d.state === 'PROD' ? (d.adjust.comment ? `Ajustes pedidos por ${d.campaign.brandName}` : 'Entrega em produção') : d.state === 'IA' ? 'Análise da IA concluída' : 'Entrega aprovada', subtitle: d.campaign.name })),

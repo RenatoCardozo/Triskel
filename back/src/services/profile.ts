@@ -107,6 +107,7 @@ export async function loadProfile(userId: string) {
     api[f.k] = f.kind === 'a' ? (Array.isArray(v) ? v : []) : (v ?? '')
   }
   if (role === 'CREATOR') {
+    api.rating = p.ratingAvg ?? 0; api.jobs = p.jobsCount ?? 0
     api.cpf = p.cpf ?? ''; api.nasc = p.birthDate ? isoDate(p.birthDate) : ''
     api.val = { reels: p.priceReels ?? 0, stories: p.priceStories ?? 0, tiktok: p.priceTiktok ?? 0, img: p.imageUse ?? OPT.imgUso[0], showPrices: p.showPrices, acceptBelowMin: p.acceptBelowMin }
   } else {

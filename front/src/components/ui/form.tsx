@@ -1,6 +1,6 @@
 'use client'
 import { forwardRef, useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
-import { centsToMask, maskToCents, passwordRules, passwordStrength } from '@/lib/masks'
+import { centsToMask, maskToCents, passwordRules } from '@/lib/masks'
 import { Icon } from '../Icon'
 
 interface FieldShell { label: string; error?: string; hint?: ReactNode; className?: string; optional?: boolean }
@@ -48,26 +48,32 @@ export function MoneyInput({ label, error, hint, className, optional, id: pid, v
   )
 }
 
-export function PasswordInput({ label, error, hint, className, id: pid, ...r }: FieldShell & InputHTMLAttributes<HTMLInputElement>) {
+export function PasswordInput({ label, error, hint, className, id: pid, fig, ...r }: FieldShell & InputHTMLAttributes<HTMLInputElement> & { fig?: boolean }) {
   const id = useFid(pid); const [show, setShow] = useState(false)
-  return (
-    <Shell id={id} {...{ label, error, hint, className }}>
-      <div className="relative">
-        <input id={id} className="inp !pr-24" type={show ? 'text' : 'password'} {...aria(id, error, hint)} {...r} />
-        <button type="button" onClick={() => setShow((s) => !s)} aria-pressed={show} aria-label={show ? 'Ocultar senha' : 'Mostrar senha'} className="absolute right-2 top-1/2 inline-flex -translate-y-1/2 items-center gap-1 rounded-full px-3 py-1.5 text-xs font-extrabold text-tealtext hover:bg-ok-bg"><Icon n={show ? 'eyeoff' : 'eye'} size={16} />{show ? 'Ocultar' : 'Mostrar'}</button>
-      </div>
-    </Shell>
+  const field = (
+    <div className="relative">
+      <input id={id} className={fig ? 'tk-in pw' : 'inp !pr-20'} type={show ? 'text' : 'password'} {...aria(id, error, hint)} {...r} />
+      <button type="button" onClick={() => setShow((s) => !s)} aria-pressed={show} aria-label={show ? 'Ocultar senha' : 'Mostrar senha'} className="tk-eye">{show ? 'Ocultar' : 'Mostrar'}</button>
+    </div>
   )
+  if (fig) return <div className={className}><label htmlFor={id} className="tk-lb">{label}</label>{field}{error && <div id={id + '-e'} role="alert" className="tk-err">{error}</div>}</div>
+  return <Shell id={id} {...{ label, error, hint, className }}>{field}</Shell>
 }
-export function PasswordMeter({ value }: { value: string }) {
-  const s = passwordStrength(value), r = passwordRules(value)
-  const colors = ['#d9dff0', '#e0746a', '#f0a23b', '#5fcf9a', '#17b890']
-  const rule = (ok: boolean, t: string) => <li key={t} className={ok ? 'font-bold text-tealtext' : 'text-ink-2'}>{ok ? '✓' : '•'} {t}</li>
+const STRENGTH: Array<[string, string, number, string]> = [['Crie uma senha', '#8a8f98', 0, ''], ['Fraca', '#c4442b', 1, '#e8896a'], ['Fraca', '#c4442b', 1, '#e8896a'], ['Média', '#a86a0c', 2, '#f2b84b'], ['Boa', '#0f8f7d', 3, '#2dd4bf'], ['Forte', '#1a8f3c', 4, '#2dd450']]
+export function PasswordMeter({ value, confirm }: { value: string; confirm?: string }) {
+  const r = passwordRules(value)
+  const list: Array<[string, boolean]> = [['8+ caracteres', r.len], ['a-z', r.lower], ['A-Z', r.upper], ['0-9', r.num], ['Especial (!@#)', r.special]]
+  const n = value ? list.filter((x) => x[1]).length : 0
+  const L = STRENGTH[n]!
+  const msg: [string, string] = !confirm ? ['Repita a senha para confirmar.', '#7b828a'] : value === confirm ? ['✓ As senhas coincidem', '#0f8f7d'] : ['As senhas ainda não coincidem', '#c4442b']
   return (
     <div aria-live="polite">
-      <div className="flex gap-1" aria-hidden="true">{[1, 2, 3, 4].map((i) => <span key={i} className="h-1.5 flex-1 rounded-full" style={{ background: i <= s.score ? colors[s.score] : colors[0] }} />)}</div>
-      <p className="cap mt-1">Força da senha: <b>{s.label}</b></p>
-      <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-[12.5px]">{[rule(r.len, '8+ caracteres'), rule(r.lower, 'a-z'), rule(r.upper, 'A-Z'), rule(r.num, '0-9'), rule(r.special, 'Especial (!@#)')]}</ul>
+      <div style={{ display: 'flex', gap: 6 }} aria-hidden="true">{[0, 1, 2, 3].map((i) => <i key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: i < L[2] ? L[3] : '#e3ece9', transition: 'background .25s' }} />)}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 12, fontWeight: 500, color: '#7b828a' }}><span>Força da senha</span><b style={{ color: L[1] }}>{L[0]}</b></div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
+        {list.map(([t, ok]) => <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 20, padding: '4px 10px', fontSize: 12, fontWeight: ok ? 600 : 500, border: `1px solid ${ok ? '#2dd4bf' : '#d6dcdb'}`, background: ok ? '#e6f8f4' : '#fff', color: ok ? '#0f6f61' : '#7b828a', transition: 'all .2s' }}>{ok ? '✓ ' : ''}{t}</span>)}
+      </div>
+      <div style={{ marginTop: 12, fontSize: 13, fontWeight: 500, color: msg[1] }}>{msg[0]}</div>
     </div>
   )
 }

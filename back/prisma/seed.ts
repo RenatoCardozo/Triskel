@@ -52,13 +52,22 @@ const cnpjFrom = (base: string) => {
 const slug = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '')
 
 /** PNG de degradê nas cores da marca (índigo -> verde-água), gerado sem dependências. Serve de foto de perfil/capa de demonstração. */
-function gradientPng(w: number, h: number, a: [number, number, number], b: [number, number, number]): Buffer {
+function gradientPng(w: number, h: number, a: [number, number, number], b: [number, number, number], art: 'none' | 'person' | 'wave' = 'none'): Buffer {
   const raw = Buffer.alloc((w * 3 + 1) * h)
   for (let y = 0; y < h; y++) {
     raw[y * (w * 3 + 1)] = 0
     for (let x = 0; x < w; x++) {
       const t = (x / (w - 1) + y / (h - 1)) / 2, o = y * (w * 3 + 1) + 1 + x * 3
-      for (let i = 0; i < 3; i++) raw[o + i] = Math.round(a[i] + (b[i] - a[i]) * t)
+      // desenho opcional por cima do degradê (silhueta de pessoa no avatar; ondas e bolhas na capa), como no protótipo
+      let white = 0
+      if (art === 'person') {
+        const dx = x - w / 2, hy = y - h * 0.39, by = y - h * 1.06
+        if (dx * dx + hy * hy < (h * 0.2) ** 2 || (dx / (w * 0.4)) ** 2 + (by / (h * 0.46)) ** 2 < 1) white = 1
+      } else if (art === 'wave') {
+        if (y > h * (0.7 + 0.08 * Math.sin((x / w) * Math.PI * 2.4 + 1))) white = 0.28
+        for (const [cx, cy, r] of [[w * 0.2, h * 0.1, h * 0.12], [w * 0.8, h * 0.14, h * 0.26]]) if ((x - cx) ** 2 + (y - cy) ** 2 < r * r) white = Math.max(white, 0.18)
+      }
+      for (let i = 0; i < 3; i++) { const v = a[i] + (b[i] - a[i]) * t; raw[o + i] = Math.round(v + (255 - v) * white) }
     }
   }
   const crcT = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0 })
@@ -68,6 +77,7 @@ function gradientPng(w: number, h: number, a: [number, number, number], b: [numb
   return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(raw)), chunk('IEND', Buffer.alloc(0))])
 }
 const INDIGO: [number, number, number] = [76, 92, 202], TEAL: [number, number, number] = [45, 212, 191]
+const MINT: [number, number, number] = [95, 224, 161], TEAL2: [number, number, number] = [60, 212, 199]
 
 // ---------- criadores (CRD do protótipo) ----------
 interface Cr {
@@ -229,7 +239,7 @@ async function main() {
   }
 
   // fotos de perfil e capa de demonstração (necessárias para o perfil contar como completo e continuar aparecendo nas buscas)
-  const avatar = gradientPng(256, 256, INDIGO, TEAL), cover = gradientPng(960, 320, TEAL, INDIGO)
+  const avatar = gradientPng(256, 256, MINT, TEAL2, 'person'), cover = gradientPng(960, 320, MINT, TEAL2, 'wave')
   for (const key of [...CREATORS.map((c) => c.key), 'dv', 'md']) {
     const link: Record<string, string> = {}
     for (const [kind, buf] of [['avatar', avatar], ['cover', cover]] as const) {

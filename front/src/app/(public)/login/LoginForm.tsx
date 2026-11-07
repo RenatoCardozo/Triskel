@@ -7,15 +7,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { authCall } from '@/lib/api'
 import { loginSchema, type LoginForm as F } from '@/lib/schemas'
 import { safeNext } from '@/lib/forms'
-import { Button, Note } from '@/components/ui'
-import { Input, PasswordInput } from '@/components/ui/form'
+import { Note } from '@/components/ui'
+import { PasswordInput } from '@/components/ui/form'
 import { Petals } from '@/components/Logo'
 
+/** Login do Figma: card de 380 px, campos de 50 px, botão "Entrar" 20/900. */
 export function LoginForm() {
   const router = useRouter(); const sp = useSearchParams()
   const [err, setErr] = useState('')
   const [forgot, setForgot] = useState(false)
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<F>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', senha: '', remember: true } })
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<F>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', senha: '', remember: false } })
 
   async function onSubmit(v: F) {
     setErr('')
@@ -23,25 +24,29 @@ export function LoginForm() {
     catch (e) { setErr((e as Error).message) }
   }
   return (
-    <div className="mx-auto grid max-w-md px-4 py-10">
-      <div className="card !p-6">
-        <div className="mb-3 flex justify-center"><Petals size={54} /></div>
-        <h1 className="h-title !text-2xl">Bem-vindo de volta</h1>
-        <p className="h-sub mt-1">Entre para acessar suas campanhas e conversas</p>
+    <div className="tk-pg login">
+      <div className="tk-card login">
+        <div className="tk-mark"><Petals size={89} /></div>
+        <h1 className="tk-ttl" style={{ marginTop: 44 }}>Bem-vindo de volta</h1>
+        <p className="tk-sb" style={{ marginTop: 23 }}>Entre para acessar suas campanhas e conversas</p>
         {sp.get('senha') && <Note tone="ok" className="mt-4" role="status">Senha alterada. Entre novamente com a nova senha.</Note>}
         {sp.get('expirou') && <Note tone="warn" className="mt-4" role="status">Sua sessão expirou. Entre novamente.</Note>}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-5 space-y-4">
-          <Input label="E-mail" type="email" autoComplete="username" inputMode="email" error={errors.email?.message} {...register('email')} />
-          <PasswordInput label="Senha" autoComplete="current-password" error={errors.senha?.message} {...register('senha')} />
-          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-            <label className="inline-flex items-center gap-2 font-semibold text-ink"><input type="checkbox" className="h-4 w-4 accent-[#2dd4bf]" {...register('remember')} />Lembrar-me</label>
-            <button type="button" className="link" onClick={() => setForgot((s) => !s)} aria-expanded={forgot}>Esqueci minha senha</button>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate style={{ marginTop: 38 }}>
+          <div>
+            <label htmlFor="email" className="tk-lb" style={{ marginBottom: 2 }}>E-mail</label>
+            <input id="email" type="email" autoComplete="username" inputMode="email" className="tk-in" aria-invalid={errors.email ? true : undefined} {...register('email')} />
+            {errors.email && <div role="alert" className="tk-err">{errors.email.message}</div>}
           </div>
-          {forgot && <Note>A recuperação de senha por e-mail ainda não está disponível nesta versão. Se precisar de ajuda para entrar, <Link href="/fale-conosco" className="link">fale conosco</Link>.</Note>}
-          {err && <Note tone="danger" role="alert">{err}</Note>}
-          <Button type="submit" block loading={isSubmitting}>Entrar</Button>
+          <PasswordInput fig id="senha" label="Senha" className="mt-[10px]" autoComplete="current-password" error={errors.senha?.message} {...register('senha')} />
+          <div className="mt-4 flex items-center justify-between" style={{ fontSize: 14 }}>
+            <label className="tk-ck" style={{ fontWeight: 300, color: '#2dd4bf' }}><input type="checkbox" aria-label="Lembrar-me" {...register('remember')} /><span style={{ marginLeft: 3 }}>Lembrar-me</span></label>
+            <button type="button" onClick={() => setForgot((s) => !s)} aria-expanded={forgot} style={{ fontWeight: 700, color: '#62dfcf', background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 14 }}>Esqueci minha senha</button>
+          </div>
+          {forgot && <Note className="mt-3">A recuperação de senha por e-mail ainda não está disponível nesta versão. Se precisar de ajuda para entrar, <Link href="/fale-conosco" className="link">fale conosco</Link>.</Note>}
+          {err && <Note tone="danger" role="alert" className="mt-3">{err}</Note>}
+          <button type="submit" className="tk-btn" style={{ marginTop: 19 }} disabled={isSubmitting}>{isSubmitting ? 'Entrando…' : 'Entrar'}</button>
+          <p style={{ marginTop: 22, fontSize: 14, fontWeight: 300, color: '#62dfcf' }}>Ainda não possui conta? <Link href="/cadastro" style={{ fontWeight: 700, color: '#62dfcf', textDecoration: 'none' }}>Cadastre-se grátis</Link></p>
         </form>
-        <p className="mt-5 text-center text-sm text-ink-2">Ainda não possui conta? <Link href="/cadastro" className="link">Cadastre-se grátis</Link></p>
       </div>
     </div>
   )

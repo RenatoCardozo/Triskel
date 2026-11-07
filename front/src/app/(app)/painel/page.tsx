@@ -5,7 +5,7 @@ import { api } from '@/lib/api'
 import type { ProposalListItem } from '@/lib/types'
 import { useDashboard, useMe } from '@/hooks/queries'
 import { CompleteBanner, ProfileSummary } from '@/components/ProfileSummary'
-import { Card, ErrorState, Kpi, LinkButton, PageSkeleton, Title } from '@/components/ui'
+import { Card, ErrorState, Kpi, PageSkeleton, Title } from '@/components/ui'
 
 export default function Painel() {
   const me = useMe(); const d = useDashboard()
@@ -37,15 +37,16 @@ export default function Painel() {
           <section aria-labelledby="atn">
             <h2 id="atn" className="h-sec mb-2">Precisa da sua atenção</h2>
             {x.attention.length === 0 ? <Card className="cap">Nada pendente por aqui. Quando houver proposta, pagamento ou entrega para você, aparece neste lugar.</Card> : (
-              <ul className="space-y-2">{x.attention.map((a) => (
-                <li key={a.kind + a.id} className="card flex items-center justify-between gap-3"><div className="min-w-0"><b className="block text-ink">{a.title}</b><span className="cap block truncate">{a.subtitle}</span></div><LinkButton href={href(a)} size="sm">{cta(a)}</LinkButton></li>
+              <ul className="space-y-3">{x.attention.map((a) => (
+                <li key={a.kind + a.id}><Link href={href(a)} className="card block no-underline"><b className="block text-[16px] font-bold text-ink">{a.title}</b><span className="cap block">{a.subtitle}</span><span className="mt-1 block text-[14px] font-bold text-tealtext">{cta(a)}</span></Link></li>
               ))}</ul>
             )}
           </section>
-          <Card className="flex items-center justify-between gap-3">
-            <div><h2 className="h-sec">Contatos</h2><p className="cap">{counts ? `${counts.all} ${counts.all === 1 ? 'conversa' : 'conversas'} · ${counts.needsYou} ${counts.needsYou === 1 ? 'aguarda' : 'aguardam'} você` : 'Carregando…'}</p></div>
-            <LinkButton href="/contatos" variant="outline" size="sm">Abrir contatos</LinkButton>
-          </Card>
+          <Link href="/contatos" className="card block no-underline">
+            <h2 className="text-[16px] font-bold text-ink">Contatos</h2>
+            <p className="cap">{counts ? `${counts.all} ${counts.all === 1 ? 'conversa' : 'conversas'} · ${counts.needsYou} ${counts.needsYou === 1 ? 'aguarda' : 'aguardam'} você` : 'Carregando…'}</p>
+            <span className="mt-1 block text-[14px] font-bold text-tealtext">Abrir contatos</span>
+          </Link>
           {x.suggestion && (
             <section aria-labelledby="sug">
               <h2 id="sug" className="h-sec mb-2">{u.role === 'CREATOR' ? 'Sugeridas pela IA para o seu perfil' : 'Sugerido pela IA para você'}</h2>

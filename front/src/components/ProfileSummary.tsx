@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import type { Me } from '@/lib/types'
 import { fileUrl } from '@/lib/api'
-import { initials } from '@/lib/format'
 import { Icon } from './Icon'
 import { Pill } from './ui'
 
@@ -18,25 +17,39 @@ export function subtitleOf(u: Me) {
 }
 
 /** Cartão-resumo do protótipo (SUMM): capa, foto, nome, situação do perfil e atalho. */
-export function ProfileSummary({ u }: { u: Me }) {
+export function ProfileSummary({ u, variant = 'summary' }: { u: Me; variant?: 'summary' | 'public' }) {
   const cover = fileUrl(u.coverUrl)
+  const pub = variant === 'public'
   return (
     <section className="card overflow-hidden !p-0" aria-label="Resumo do perfil">
-      <div className="relative h-28 bg-gradient-to-br from-mint to-teal-2 sm:h-36" style={cover ? { backgroundImage: `url(${cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
-        {!cover && <span className="absolute inset-0 grid place-items-center text-sm font-bold text-white/90">Sem foto de capa</span>}
+      <div className="relative h-[96px] overflow-hidden sm:h-36" style={cover ? { backgroundImage: `url(${cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: 'linear-gradient(135deg,#5fe0a1,#3cd4c7)' }}>
+        {!cover && (
+          <svg viewBox="0 0 380 96" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-0 h-full w-full">
+            <circle cx="66" cy="10" r="12" fill="#fff" opacity=".18" /><circle cx="310" cy="14" r="26" fill="#fff" opacity=".18" />
+            <path d="M0 74C60 50 120 52 190 66S320 80 380 58V96H0z" fill="#fff" opacity=".28" />
+          </svg>
+        )}
       </div>
       <div className="px-4 pb-4">
-        <div className="relative -mt-9 flex items-start gap-3">
-          <span className="avatar !rounded-2xl border-[3px] border-white shadow" style={{ width: 72, height: 72, fontSize: 26 }}>
-            {u.avatarUrl ? <img src={fileUrl(u.avatarUrl)!} alt={`Foto de ${u.name}`} /> : initials(u.name)}
+        <div className={pub ? 'relative -mt-[48px] flex flex-col items-center text-center' : 'relative -mt-[30px] flex items-start gap-3'}>
+          <span className="avatar !rounded-[14px] border-[3px] border-white shadow" style={{ width: 76, height: 76, fontSize: 26, background: u.avatarUrl ? undefined : 'linear-gradient(135deg,#5fe0a1,#3cd4c7)' }}>
+            {u.avatarUrl ? <img src={fileUrl(u.avatarUrl)!} alt={`Foto de ${u.name}`} /> : (
+              <svg viewBox="0 0 24 24" width="46" height="46" aria-label={`Sem foto de ${u.name}`} role="img"><circle cx="12" cy="8.5" r="4.2" fill="#fff" /><path d="M3.5 22c0-5 3.8-8 8.5-8s8.5 3 8.5 8z" fill="#fff" /></svg>
+            )}
           </span>
-          <div className="min-w-0 pt-10"><h2 className="truncate text-xl font-extrabold text-ink">{u.name}</h2><p className="cap truncate">{subtitleOf(u)}</p></div>
+          <div className={pub ? 'mt-2 min-w-0' : 'min-w-0 pt-[34px]'}>
+            <h2 className={pub ? 'text-[18px] font-extrabold text-ink' : 'truncate text-[17px] font-extrabold text-ink'}>{u.name}</h2><p className={pub ? 'cap' : 'cap truncate'}>{subtitleOf(u)}</p>
+            {pub && u.role === 'CREATOR' && Number(u.profile.rating) > 0 && <p className="mt-1 text-[14px] font-semibold text-ink">★ {String(u.profile.rating).replace('.', ',')} · {u.profile.jobs} {u.profile.jobs === 1 ? 'trabalho' : 'trabalhos'}</p>}
+            {pub && u.role === 'CREATOR' && <span className="pl mt-2">Aberta a convites</span>}
+          </div>
         </div>
+        {pub ? null : <>
         <div className="mt-3 flex flex-wrap gap-2">
           <Pill tone={u.visible ? 'ok' : 'warn'}>{u.visible ? 'Perfil visível' : 'Perfil oculto'}</Pill>
           <Pill tone={u.verified ? 'ok' : 'warn'}>{u.verified ? 'E-mail validado' : 'E-mail pendente'}</Pill>
         </div>
         <Link href="/perfil" className="btn btn-outline btn-block mt-3">{u.complete ? 'Ver meu perfil' : 'Ver prévia do perfil'}</Link>
+        </>}
       </div>
     </section>
   )
