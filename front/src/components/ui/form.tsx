@@ -41,8 +41,7 @@ export function MoneyInput({ label, error, hint, className, optional, id: pid, v
   return (
     <Shell id={id} {...{ label, error, hint, className, optional }}>
       <div className="relative">
-        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-ink-2">R$</span>
-        <input id={id} className="inp !pl-11" inputMode="numeric" autoComplete="off" value={value ? centsToMask(value) : ''} placeholder="0,00" onChange={(e) => onChange(maskToCents(e.target.value))} {...aria(id, error, hint)} {...r} />
+        <input id={id} className="inp" inputMode="numeric" autoComplete="off" value={value ? centsToMask(value) : ''} placeholder="0,00" onChange={(e) => onChange(maskToCents(e.target.value))} {...aria(id, error, hint)} {...r} />
       </div>
     </Shell>
   )

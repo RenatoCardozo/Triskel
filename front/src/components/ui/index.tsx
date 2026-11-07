@@ -58,7 +58,8 @@ export function Chips({ options, value, onChange, multi = true, label, max }: { 
   }
   return <div role="group" aria-label={label} className="flex flex-wrap gap-2">{options.map((o) => <button key={o} type="button" className="chip" aria-pressed={sel.includes(o)} onClick={() => toggle(o)}>{o}</button>)}</div>
 }
-export function Tabs<T extends string>({ tabs, value, onChange, label }: { tabs: Array<[T, string]>; value: T; onChange: (v: T) => void; label: string }) {
+export function Tabs<T extends string>({ tabs, value, onChange, label, chips }: { tabs: Array<[T, string]>; value: T; onChange: (v: T) => void; label: string; chips?: boolean }) {
+  if (chips) return <div role="tablist" aria-label={label} className="flex flex-wrap gap-2">{tabs.map(([k, l]) => <button key={k} role="tab" aria-selected={value === k} className="tk-fchip" onClick={() => onChange(k)}>{l}</button>)}</div>
   return <div role="tablist" aria-label={label} className="flex flex-wrap gap-1 rounded-full bg-page p-1">{tabs.map(([k, l]) => <button key={k} role="tab" aria-selected={value === k} className="tab" onClick={() => onChange(k)}>{l}</button>)}</div>
 }
 

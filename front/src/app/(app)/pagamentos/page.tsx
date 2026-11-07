@@ -21,8 +21,8 @@ function Row({ t, creator }: { t: MoneyTx; creator: boolean }) {
   return (
     <li>
       <Link href={`/pagamentos/comprovante/${t.id}`} className="card flex items-center gap-3 no-underline hover:shadow-md">
-        <span className={`grid h-10 w-10 flex-none place-items-center rounded-full ${credit ? 'bg-ok-bg text-tealtext' : 'bg-[#eef1fc] text-ink'}`}><Icon n={t.kind === 'RECHARGE' ? 'plus' : t.kind === 'WITHDRAWAL' ? 'up' : 'wallet'} size={18} /></span>
-        <div className="min-w-0 flex-1"><b className="block truncate text-ink">{t.kind === 'RECHARGE' ? 'Adição de saldo' : t.description}</b><span className="cap block truncate">{fdatetime(t.createdAt)} · {kindTxt}</span></div>
+        <span className={`grid h-10 w-10 flex-none place-items-center rounded-[10px] bg-ok-bg text-tealtext`}><Icon n={t.kind === 'RECHARGE' ? 'plus' : t.kind === 'WITHDRAWAL' ? 'up' : 'wallet'} size={18} /></span>
+        <div className="min-w-0 flex-1"><b className="block text-[16px] font-bold leading-tight text-[#4c5dca]">{t.kind === 'RECHARGE' ? 'Adição de saldo' : t.description}</b><span className="cap block">{fdatetime(t.createdAt)} · {kindTxt}</span></div>
         <div className="text-right"><b className="block text-ink">{sign}{brl(value)}</b><Pill tone={tone}>{label}</Pill></div>
       </Link>
     </li>
@@ -46,13 +46,13 @@ export default function Pagamentos() {
         <>
           <div className="grid grid-cols-2 gap-3"><Kpi value={brl(x.availableCents)} label="Disponível para saque" /><Kpi value={brl(x.custodyCents)} label="A receber" hint="Em custódia até a aprovação" /></div>
           <LinkButton href="/pagamentos/saque" block>Sacar via Pix</LinkButton>
-          <p className="np">O contratante paga com o saldo da carteira dele antes de você começar. O valor fica em custódia na Triskel e é liberado quando a entrega é aprovada.</p>
+          <p className="np flex gap-2"><Icon n="lock" size={18} className="mt-0.5 flex-none" /><span>O contratante paga com o saldo da carteira dele antes de você começar. O valor fica em custódia na Triskel e é liberado quando a entrega é aprovada.</span></p>
         </>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3"><Kpi value={brl(x.balanceCents)} label="Saldo disponível" hint="Usado para pagar contratos" /><Kpi value={brl(x.custodyCents)} label="Em custódia" hint="Liberado após aprovação" /></div>
           <LinkButton href="/pagamentos/adicionar" block><Icon n="plus" size={18} /> Adicionar saldo</LinkButton>
-          <p className="np">Você paga os criadores com o saldo da carteira. Adicione saldo por Pix ou cartão; ao confirmar um contrato, o valor mais a taxa de serviço saem do saldo e ficam em custódia até você aprovar a entrega.</p>
+          <p className="np flex gap-2"><Icon n="lock" size={18} className="mt-0.5 flex-none" /><span>Você paga os criadores com o saldo da carteira. Adicione saldo por Pix ou cartão; ao confirmar um contrato, o valor mais a taxa de serviço saem do saldo e ficam em custódia até você aprovar a entrega.</span></p>
           <section aria-labelledby="fm"><h2 id="fm" className="h-sec mb-2">Formas de adicionar saldo</h2>
             <ul className="space-y-2">
               <li className="card flex items-center gap-3"><Icon n="pix" /><b className="flex-1 text-ink">Pix</b><Pill>Disponível</Pill></li>

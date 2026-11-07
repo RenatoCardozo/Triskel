@@ -6,6 +6,9 @@ import { listOpportunities, searchCreators } from './search'
 import { reviewCandidates, receivedReviews } from './reviews'
 import { loadProfile } from './profile'
 
+/** "Doce Vale Confeitaria" -> "Doce Vale"; "Clínica Sorriso Sul" -> "Sorriso Sul" (rótulo curto do protótipo). */
+const shortName = (n: string) => n.replace(/^(Clínica|Studio|Estúdio|Loja)\s+/i, '').replace(/\s+(Confeitaria|Studio)$/i, '')
+
 /** Valor do KPI: sem centavos quando inteiro ("R$ 420"), como no protótipo. */
 const brlShort = (cents: number) => (cents % 100 === 0 ? brl(cents).replace(/,00$/, '') : brl(cents))
 
@@ -53,15 +56,31 @@ export async function dashboard(userId: string, role: 'CREATOR' | 'BUSINESS' | '
     prisma.proposal.count({ where: { contractorId: userId, status: 'OPEN', origin: 'INVITE' } }),
     prisma.moneyTx.aggregate({ where: { userId, kind: 'CONTRACT', createdAt: { gte: monthStart } }, _sum: { totalCents: true } }),
     prisma.proposal.findMany({ where: { contractorId: userId, status: 'CONTRACT' }, select: { creatorId: true } }),
-    role === 'AGENCY' ? prisma.agencyClient.findMany({ where: { agencyId: userId }, select: { id: true, _count: { select: { campaigns: true } } } }) : Promise.resolve([]),
+    role === 'AGENCY' ? prisma.agencyClient.findMany({ where: { agencyId: userId }, select: { id: true, name: true, _count: { select: { campaigns: true } } } }) : Promise.resolve([]),
   ])
   const active = campaigns.filter((c) => c.proposals.some((p) => ['OPEN', 'ACCEPTED'].includes(p.status) || (p.status === 'CONTRACT' && p.contract?.delivery?.state !== 'LIBERADO'))).length
   const review = deliveries.filter((d) => d.state === 'APROV').length
+  const accepted = await prisma.proposal.findMany({ where: { contractorId: userId, status: 'ACCEPTED' }, include: { creator: { select: { name: true } }, rounds: { select: { valueCents: true }, orderBy: { seq: 'asc' } } }, orderBy: { updatedAt: 'desc' }, take: 2 })
+  const responded = await prisma.proposal.findMany({ where: { contractorId: userId, status: 'OPEN' }, include: { creator: { select: { name: true } }, rounds: { select: { by: true, valueCents: true }, orderBy: { seq: 'asc' } } }, take: 10, orderBy: { updatedAt: 'desc' } })
+  const activeClients = (clients as any[]).filter((c) => c._count.campaigns > 0) as Array<{ name: string }>
+  const inProd = deliveries.filter((d) => d.state === 'PROD').length
+  const sent = await prisma.proposal.count({ where: { contractorId: userId } })
+  const replied = responded.filter((p) => p.rounds[p.rounds.length - 1].by === 'C').length
+  const waiting = deliveries.filter((d) => d.state !== 'LIBERADO').length
+  const approvedVideos = deliveries.filter((d) => d.state === 'LIBERADO' || d.state === 'APROVADO').reduce((n, d) => n + (d.campaign.videos || 0), 0)
   const kpis = role === 'AGENCY'
-    ? [{ label: 'Clientes ativos', value: String((clients as any[]).filter((c) => c._count.campaigns > 0).length) }, { label: 'Campanhas ativas', value: String(active) }, { label: 'Criadores contratados', value: String(new Set(contracted.map((c) => c.creatorId)).size) }, { label: 'Entregas para revisar', value: String(review) }]
-    : [{ label: 'Campanhas ativas', value: String(active) }, { label: 'Convites enviados', value: String(invites) }, { label: 'Entregas para revisar', value: String(review) }, { label: 'Investido no mês', value: brl(spent._sum.totalCents ?? 0) }]
-  const accepted = await prisma.proposal.findMany({ where: { contractorId: userId, status: 'ACCEPTED' }, orderBy: { updatedAt: 'desc' }, take: 2 })
-  const responded = await prisma.proposal.findMany({ where: { contractorId: userId, status: 'OPEN' }, include: { rounds: { select: { by: true }, orderBy: { seq: 'asc' } } }, take: 10, orderBy: { updatedAt: 'desc' } })
+    ? [
+        { label: 'Clientes ativos', value: String(activeClients.length), hint: activeClients.map((c) => shortName(c.name)).join(', ') || 'Nenhum cliente com campanha' },
+        { label: 'Campanhas ativas', value: String(active), hint: inProd > 0 ? `${inProd} em produção` : 'Nenhuma em produção' },
+        { label: 'Propostas enviadas', value: String(sent), hint: replied > 0 ? `${replied} ${replied === 1 ? 'respondeu' : 'responderam'}` : 'Nenhuma resposta ainda' },
+        { label: 'Entregas para revisar', value: String(review), hint: review > 0 ? 'Aguardam a sua revisão' : 'Nenhuma pendente' },
+      ]
+    : [
+        { label: 'Campanhas ativas', value: String(active), hint: waiting > 0 ? `${waiting} aguardando entrega` : 'Nenhuma aguardando entrega' },
+        { label: 'Propostas enviadas', value: String(sent), hint: replied > 0 ? `${replied} ${replied === 1 ? 'respondeu' : 'responderam'}` : 'Nenhuma resposta ainda' },
+        { label: 'Entregas para revisar', value: String(review), hint: review > 0 ? 'Aguardam a sua revisão' : 'Nenhuma pendente' },
+        { label: 'Investido no mês', value: brlShort(spent._sum.totalCents ?? 0), hint: approvedVideos > 0 ? `${approvedVideos} ${approvedVideos === 1 ? 'vídeo aprovado' : 'vídeos aprovados'}` : 'Nenhum vídeo aprovado' },
+      ]
   const latest = campaigns.length ? campaigns.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0] : null
   let suggestion = null as null | { kind: 'creator'; id: string; title: string; subtitle: string }
   if (latest) {
@@ -72,8 +91,8 @@ export async function dashboard(userId: string, role: 'CREATOR' | 'BUSINESS' | '
     ...base, role, kpis,
     attention: [
       ...needDeliveries.slice(0, 2).map((d) => ({ kind: 'delivery' as const, id: d.id, title: `${d.counterpart} enviou a entrega`, subtitle: `${d.campaign.name}${d.campaign.clientName ? ' · ' + d.campaign.clientName : ''} · relatório da IA pronto` })),
-      ...accepted.map((p) => ({ kind: 'proposal' as const, id: p.id, title: 'Proposta aceita: falta pagar', subtitle: p.campaignName })),
-      ...responded.filter((p) => p.rounds[p.rounds.length - 1].by === 'C').slice(0, 2).map((p) => ({ kind: 'proposal' as const, id: p.id, title: 'Contraproposta recebida', subtitle: p.campaignName })),
+      ...accepted.map((p) => ({ kind: 'proposal' as const, id: p.id, title: `${p.creator.name} aceitou a proposta`, subtitle: `${p.campaignName} · ${brl(p.rounds[p.rounds.length - 1]?.valueCents ?? 0)} · falta confirmar e pagar` })),
+      ...responded.filter((p) => p.rounds[p.rounds.length - 1].by === 'C').slice(0, 2).map((p) => ({ kind: 'proposal' as const, id: p.id, title: `Contraproposta de ${p.creator.name}`, subtitle: `${p.campaignName} · ${brl(p.rounds[p.rounds.length - 1]?.valueCents ?? 0)}` })),
     ].slice(0, 4),
     suggestion,
   }

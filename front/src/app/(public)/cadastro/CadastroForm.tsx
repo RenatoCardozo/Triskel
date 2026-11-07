@@ -65,7 +65,7 @@ export function CadastroForm() {
           <span className="pill" aria-hidden="true" style={{ left: pillLeft(idx), width: 120 }} />
           {TABS.map(([r, t]) => <button key={r} type="button" role="tab" aria-selected={role === r} onClick={() => pick(r)}>{t}</button>)}
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate style={{ marginTop: 26 }}>
+        <form method="post" onSubmit={handleSubmit(onSubmit)} noValidate style={{ marginTop: 26 }}>
           {field('nome', role === 'CREATOR' ? 'Nome completo' : l.nome, role === 'CREATOR' ? 'Como você quer ser chamado(a)' : l.nome, { autoComplete: 'organization' })}
           {role !== 'CREATOR' && field('resp', 'Nome completo', 'Nome do responsavel', { autoComplete: 'name' })}
           {masked('doc', l.doc, role === 'CREATOR' ? '000.000.000-00' : '00.000.000/0000-00', role === 'CREATOR' ? maskCPF : maskCNPJ)}

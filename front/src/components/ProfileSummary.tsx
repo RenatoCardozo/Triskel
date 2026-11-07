@@ -20,9 +20,10 @@ export function subtitleOf(u: Me) {
 export function ProfileSummary({ u, variant = 'summary' }: { u: Me; variant?: 'summary' | 'public' }) {
   const cover = fileUrl(u.coverUrl)
   const pub = variant === 'public'
+  const brand = u.role === 'CREATOR' ? 'linear-gradient(135deg,#5fe0a1,#3cd4c7)' : u.role === 'AGENCY' ? 'linear-gradient(135deg,#f08a3c,#f7b25b)' : 'linear-gradient(135deg,#4c5cca,#7b8be8)'
   return (
     <section className="card overflow-hidden !p-0" aria-label="Resumo do perfil">
-      <div className="relative h-[96px] overflow-hidden sm:h-36" style={cover ? { backgroundImage: `url(${cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: 'linear-gradient(135deg,#5fe0a1,#3cd4c7)' }}>
+      <div className="relative h-[96px] overflow-hidden sm:h-36" style={cover ? { backgroundImage: `url(${cover})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { background: brand }}>
         {!cover && (
           <svg viewBox="0 0 380 96" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-0 h-full w-full">
             <circle cx="66" cy="10" r="12" fill="#fff" opacity=".18" /><circle cx="310" cy="14" r="26" fill="#fff" opacity=".18" />
@@ -32,7 +33,7 @@ export function ProfileSummary({ u, variant = 'summary' }: { u: Me; variant?: 's
       </div>
       <div className="px-4 pb-4">
         <div className={pub ? 'relative -mt-[48px] flex flex-col items-center text-center' : 'relative -mt-[30px] flex items-start gap-3'}>
-          <span className="avatar !rounded-[14px] border-[3px] border-white shadow" style={{ width: 76, height: 76, fontSize: 26, background: u.avatarUrl ? undefined : 'linear-gradient(135deg,#5fe0a1,#3cd4c7)' }}>
+          <span className="avatar !rounded-[14px] border-[3px] border-white shadow" style={{ width: 76, height: 76, fontSize: 26, background: u.avatarUrl ? undefined : brand }}>
             {u.avatarUrl ? <img src={fileUrl(u.avatarUrl)!} alt={`Foto de ${u.name}`} /> : (
               <svg viewBox="0 0 24 24" width="46" height="46" aria-label={`Sem foto de ${u.name}`} role="img"><circle cx="12" cy="8.5" r="4.2" fill="#fff" /><path d="M3.5 22c0-5 3.8-8 8.5-8s8.5 3 8.5 8z" fill="#fff" /></svg>
             )}
@@ -40,7 +41,7 @@ export function ProfileSummary({ u, variant = 'summary' }: { u: Me; variant?: 's
           <div className={pub ? 'mt-2 min-w-0' : 'min-w-0 pt-[34px]'}>
             <h2 className={pub ? 'text-[18px] font-extrabold text-ink' : 'truncate text-[17px] font-extrabold text-ink'}>{u.name}</h2><p className={pub ? 'cap' : 'cap truncate'}>{subtitleOf(u)}</p>
             {pub && u.role === 'CREATOR' && Number(u.profile.rating) > 0 && <p className="mt-1 text-[14px] font-semibold text-ink">★ {String(u.profile.rating).replace('.', ',')} · {u.profile.jobs} {u.profile.jobs === 1 ? 'trabalho' : 'trabalhos'}</p>}
-            {pub && u.role === 'CREATOR' && <span className="pl mt-2">Aberta a convites</span>}
+            {pub && u.visible && <span className="pl mt-2">{u.role === 'CREATOR' ? 'Aberta a convites' : u.role === 'BUSINESS' ? 'Aceita candidaturas' : 'Aceita parcerias'}</span>}
           </div>
         </div>
         {pub ? null : <>

@@ -26,7 +26,7 @@ export function CampaignFormView({ defaults, opts, clients, agency, submitLabel,
     if (agency && !v.clientId) { setError('clientId', { message: 'Escolha o cliente da campanha.' }); return }
     try { await onSubmit(v) } catch (x) { setErr(applyApiError(x, setError, { nome: 'nome', valueCents: 'valueCents', entrega: 'entrega', inicio: 'inicio', publi: 'publi' })) }
   }
-  const sec = (title: string, children: React.ReactNode) => <Card as="section" aria-label={title}><h2 className="h-sec mb-3">{title}</h2><div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div></Card>
+  const sec = (title: string, children: React.ReactNode) => <section aria-label={title} className="mt-5"><h2 className="h-sec mb-2">{title}</h2><div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{children}</div></section>
   return (
     <form noValidate onSubmit={handleSubmit(submit)} className="space-y-4">
       {sec('Sobre a campanha', <>

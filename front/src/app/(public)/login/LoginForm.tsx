@@ -31,7 +31,7 @@ export function LoginForm() {
         <p className="tk-sb" style={{ marginTop: 23 }}>Entre para acessar suas campanhas e conversas</p>
         {sp.get('senha') && <Note tone="ok" className="mt-4" role="status">Senha alterada. Entre novamente com a nova senha.</Note>}
         {sp.get('expirou') && <Note tone="warn" className="mt-4" role="status">Sua sessão expirou. Entre novamente.</Note>}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate style={{ marginTop: 38 }}>
+        <form method="post" onSubmit={handleSubmit(onSubmit)} noValidate style={{ marginTop: 38 }}>
           <div>
             <label htmlFor="email" className="tk-lb" style={{ marginBottom: 2 }}>E-mail</label>
             <input id="email" type="email" autoComplete="username" inputMode="email" className="tk-in" aria-invalid={errors.email ? true : undefined} {...register('email')} />

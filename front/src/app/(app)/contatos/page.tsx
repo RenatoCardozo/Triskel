@@ -19,7 +19,7 @@ export default function Contatos() {
     <div className="mx-auto max-w-3xl space-y-4">
       <Title sub="Propostas, contrapropostas e mensagens ficam só aqui. Ninguém precisa passar telefone, e-mail ou rede social.">Contatos</Title>
       {q.data && <div className="grid grid-cols-2 gap-3"><div className="kpi"><b>{q.data.counts.all}</b><span>Conversas</span></div><div className="kpi"><b>{q.data.counts.needsYou}</b><span>Aguardam você</span><i>Responda para não perder</i></div></div>}
-      <Tabs label="Filtrar conversas" tabs={TABS} value={f} onChange={setF} />
+      <Tabs chips label="Filtrar conversas" tabs={TABS} value={f} onChange={setF} />
       {q.isPending || me.isPending ? <PageSkeleton rows={3} /> : q.isError ? <ErrorState error={q.error} onRetry={() => q.refetch()} /> : q.data.items.length === 0 ? (
         <EmptyState title={f === 'all' ? 'Nenhuma conversa ainda' : 'Nada por aqui'}>{f === 'all' ? (me.data?.role === 'CREATOR' ? 'Quando uma empresa enviar uma proposta, ou você se candidatar a uma campanha, a conversa aparece aqui.' : 'Envie uma proposta a um criador para começar uma conversa.') : 'Nenhuma conversa neste filtro.'}</EmptyState>
       ) : (
@@ -27,13 +27,13 @@ export default function Contatos() {
           const [label, tone] = PROP_STATUS[p.status]
           return (
             <li key={p.id}>
-              <Link href={`/contatos/${p.id}`} className="card flex items-center gap-3 no-underline hover:shadow-md">
+              <Link href={`/contatos/${p.id}`} className="card relative flex items-start gap-3 no-underline hover:shadow-md">
+                {p.unread && <span className="absolute left-[66px] top-[14px] h-[7px] w-[7px] rounded-full bg-[#ff7a45]" role="img" aria-label="Nova mensagem" />}
                 <Avatar name={p.counterpart} src={p.avatarUrl} size={46} />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2"><b className={`truncate ${p.unread ? 'text-ink' : 'text-ink'}`}>{p.counterpart}</b><span className="cap flex-none">{fshort(p.lastActivity)}</span></div>
-                  <p className="cap truncate">{p.campaignName}{p.clientName ? ` · ${p.clientName}` : ''} · {brl(p.lastValueCents)}</p>
-                  <p className="truncate text-sm text-[#56608f]">{p.preview}</p>
-                  <div className="mt-1 flex flex-wrap gap-1.5"><Pill tone={p.needsYou ? 'warn' : tone}>{p.needsYou ? 'Sua vez de responder' : label}</Pill>{p.unread && <Pill tone="ink">Nova</Pill>}</div>
+                  <div className="flex items-start justify-between gap-2"><b className="text-[16px] font-bold leading-tight text-[#4c5dca]">{p.counterpart}</b><span className="flex-none"><Pill tone={p.needsYou ? 'warn' : tone}>{p.needsYou ? 'Sua vez de responder' : label}</Pill></span></div>
+                  <p className="cap truncate">{p.campaignName}{p.clientName ? ` · ${p.clientName}` : ''}</p>
+                  <div className="flex items-end justify-between gap-2"><p className="cap min-w-0 truncate">{p.preview}</p><span className="cap flex-none">{fshort(p.lastActivity)}</span></div>
                 </div>
               </Link>
             </li>

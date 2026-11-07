@@ -4,8 +4,7 @@ import { post } from '@/lib/api'
 import { applyApiError } from '@/lib/forms'
 import { useMe } from '@/hooks/queries'
 import { Button, Card, ErrorState, Note, PageSkeleton, Title } from '@/components/ui'
-import { Select, Textarea } from '@/components/ui/form'
-import { Facts } from '@/components/domain'
+import { Textarea } from '@/components/ui/form'
 
 const SAME: Array<[string, string]> = [
   ['Posso negociar fora da plataforma?', 'Não. Toda negociação, contrato, entrega e pagamento acontecem dentro da Triskel. Isso protege as duas partes e guarda o histórico para a avaliação.'],
@@ -24,7 +23,7 @@ const SUBJ = ['Dúvida sobre a plataforma', 'Pagamentos e carteira', 'Contratos 
 const PROFILE = { CREATOR: 'Criador de conteúdo', BUSINESS: 'Comércio', AGENCY: 'Agência' }
 
 export default function Ajuda() {
-  const me = useMe(); const [msg, setMsg] = useState(''); const [subj, setSubj] = useState(SUBJ[0]); const [err, setErr] = useState(''); const [ok, setOk] = useState(''); const [busy, setBusy] = useState(false)
+  const me = useMe(); const [msg, setMsg] = useState(''); const subj = SUBJ[0]; const [err, setErr] = useState(''); const [ok, setOk] = useState(''); const [busy, setBusy] = useState(false)
   if (me.isPending) return <PageSkeleton />
   if (me.isError) return <ErrorState error={me.error} onRetry={() => me.refetch()} />
   const u = me.data
@@ -34,14 +33,14 @@ export default function Ajuda() {
     setBusy(true)
     try { const r = await post<{ protocol: string }>('contact', { name: u.name, email: u.email, profile: PROFILE[u.role], subject: subj, message: msg.trim() }); setOk(`Mensagem enviada. Protocolo ${r.protocol}. Respondemos em até 1 dia útil.`); setMsg('') } catch (x) { setErr(applyApiError(x)) } finally { setBusy(false) }
   }
-  const Q = ({ q, a }: { q: string; a: string }) => <details className="card !p-0"><summary className="cursor-pointer p-4 font-extrabold text-ink">{q}</summary><p className="px-4 pb-4 text-[15px] text-[#3b4476]">{a}</p></details>
+  const Q = ({ q, a }: { q: string; a: string }) => <details className="card tk-faq !p-0"><summary>{q}</summary><p className="px-4 pb-4 text-[14px] text-[#3b4476]">{a}</p></details>
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <Title>Ajuda e suporte</Title>
       <section aria-labelledby="pf"><h2 id="pf" className="h-sec mb-2">Perguntas frequentes</h2><div className="space-y-2">{[...FAQ[u.role], ...GENERAL].map(([q, a]) => <Q key={q} q={q} a={a} />)}</div></section>
       <section aria-labelledby="fg"><h2 id="fg" className="h-sec mb-2">Fale com a gente</h2>
-        <Card className="space-y-4"><Facts cols={3} items={[['E-mail', 'suporte@triskel.com.br'], ['Atendimento', 'Seg a sex, 9h às 18h'], ['Resposta', 'Em até 1 dia útil']]} />
-          <form noValidate onSubmit={send} className="space-y-4"><Select label="Assunto" options={SUBJ} value={subj} onChange={(e) => setSubj(e.target.value)} placeholder="Selecione" /><Textarea label="Descreva o problema" rows={4} maxLength={2000} placeholder="Conte o que aconteceu" value={msg} onChange={(e) => setMsg(e.target.value)} />
+        <Card className="space-y-4"><dl className="text-[14px] text-[#4c5dca]">{[['E-mail', 'suporte@triskel.com.br'], ['Atendimento', 'Seg a sex, 9h às 18h'], ['Resposta', 'Em até 1 dia útil']].map(([k, v]) => <div key={k} className="flex justify-between gap-3 border-b border-[#e3eef0] py-2 last:border-0"><dt>{k}</dt><dd className="text-right font-bold">{v}</dd></div>)}</dl>
+          <form noValidate onSubmit={send} className="space-y-4"><Textarea label="Descreva o problema" rows={4} maxLength={2000} placeholder="Conte o que aconteceu" value={msg} onChange={(e) => setMsg(e.target.value)} />
             {err && <Note tone="danger" role="alert">{err}</Note>}{ok && <Note tone="ok" role="status">{ok}</Note>}<Button type="submit" block loading={busy}>Enviar mensagem</Button></form></Card></section>
     </div>
   )

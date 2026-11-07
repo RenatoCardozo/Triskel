@@ -28,15 +28,14 @@ function Form({ u, imgOpts }: { u: Me; imgOpts: string[] }) {
   }
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <BackLink href="/perfil" />
       <Title sub="Seus valores aparecem para empresas e agências ao buscarem criadores.">Editar valores</Title>
       <form onSubmit={submit} noValidate className="space-y-4">
-        <Card className="space-y-4">
+        <div className="space-y-3">
           <MoneyInput label="Reels 9:16 (R$)" value={reels} onChange={setReels} error={fe} />
           <MoneyInput label="Stories, pacote de 3 (R$)" value={stories} onChange={setStories} />
           <MoneyInput label="TikTok (R$)" value={tiktok} onChange={setTiktok} />
           <Select label="Uso de imagem" options={imgOpts} placeholder="Selecione" value={img} onChange={(e) => setImg(e.target.value)} />
-        </Card>
+        </div>
         <Card className="divide-y divide-line !py-2">
           <Switch checked={show} onChange={setShow} label="Mostrar valores no perfil público" hint="Desligado, só aparece “sob consulta”." />
           <Switch checked={below} onChange={setBelow} label="Aceitar propostas abaixo do meu mínimo" />

@@ -1,4 +1,5 @@
 'use client'
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
@@ -31,7 +32,7 @@ export default function PerfilPage() {
   const counts = props.data?.counts
   const HIDDEN = new Set(['insta', 'tiktok', 'yt', 'site'])   // contatos não aparecem no perfil público (ver aviso abaixo)
   const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="border-b border-[#e3eef0] py-3 last:border-0"><dt className="text-[11px] font-bold uppercase tracking-[.03em] text-[#4b5dca]">{label}</dt><dd className="mt-[3px] text-[15px] font-medium leading-snug text-ink">{children}</dd></div>
+    <div className="border-b border-[#e3eef0] py-[10px] last:border-0"><dt className="text-[11px] font-bold uppercase tracking-[.03em] text-[#4b5dca]">{label}</dt><dd className="mt-[3px] text-[15px] font-medium leading-snug text-ink">{children}</dd></div>
   )
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -50,10 +51,10 @@ export default function PerfilPage() {
               <dl>
                 {i === 0 && u.role === 'CREATOR' && <Row label="CPF">{u.profile.cpf ? maskCPF(u.profile.cpf) : 'não informado'}</Row>}
                 {fields.map((f) => (
-                  <div key={f.k} className="contents">
+                  <Fragment key={f.k}>
                     <Row label={f.label}><Val f={f} u={u} /></Row>
                     {f.k === 'genero' && age != null && <Row label="Idade">{age} anos</Row>}
-                  </div>
+                  </Fragment>
                 ))}
                 {i === 0 && u.role !== 'CREATOR' && tempo != null && <Row label="Tempo de mercado">{tempo} {tempo === 1 ? 'ano' : 'anos'}</Row>}
               </dl>

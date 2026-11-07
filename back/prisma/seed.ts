@@ -78,6 +78,7 @@ function gradientPng(w: number, h: number, a: [number, number, number], b: [numb
 }
 const INDIGO: [number, number, number] = [76, 92, 202], TEAL: [number, number, number] = [45, 212, 191]
 const MINT: [number, number, number] = [95, 224, 161], TEAL2: [number, number, number] = [60, 212, 199]
+const VIOLET: [number, number, number] = [123, 139, 232], ORANGE: [number, number, number] = [240, 138, 60], AMBER: [number, number, number] = [247, 178, 91]
 
 // ---------- criadores (CRD do protótipo) ----------
 interface Cr {
@@ -239,9 +240,11 @@ async function main() {
   }
 
   // fotos de perfil e capa de demonstração (necessárias para o perfil contar como completo e continuar aparecendo nas buscas)
-  const avatar = gradientPng(256, 256, MINT, TEAL2, 'person'), cover = gradientPng(960, 320, MINT, TEAL2, 'wave')
+  // criadores: verde-água; comércios e agências: índigo (como no protótipo)
+  const pics = { cr: [gradientPng(256, 256, MINT, TEAL2, 'person'), gradientPng(960, 320, MINT, TEAL2, 'wave')], co: [gradientPng(256, 256, INDIGO, VIOLET, 'person'), gradientPng(960, 320, INDIGO, VIOLET, 'wave')], ag: [gradientPng(256, 256, ORANGE, AMBER, 'person'), gradientPng(960, 320, ORANGE, AMBER, 'wave')] }
   for (const key of [...CREATORS.map((c) => c.key), 'dv', 'md']) {
     const link: Record<string, string> = {}
+    const [avatar, cover] = key === 'md' ? pics.ag : key === 'dv' ? pics.co : pics.cr
     for (const [kind, buf] of [['avatar', avatar], ['cover', cover]] as const) {
       const k = crypto.randomBytes(24).toString('hex') + '.png'
       await storage.put(k, buf)

@@ -6,7 +6,7 @@ import { emptyCampaign, toPayload } from '@/lib/campaign'
 import type { CampaignDetail } from '@/lib/types'
 import { useMe, useMeta } from '@/hooks/queries'
 import { CampaignFormView } from '@/components/CampaignFormView'
-import { BackLink, ErrorState, PageSkeleton, Title } from '@/components/ui'
+import { ErrorState, PageSkeleton, Title } from '@/components/ui'
 
 export default function NovaCampanha() {
   const router = useRouter(); const qc = useQueryClient()
@@ -18,7 +18,6 @@ export default function NovaCampanha() {
   const agency = me.data.role === 'AGENCY'
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <BackLink href="/campanhas">Campanhas</BackLink>
       <Title sub="Quanto mais completo o briefing, melhor a campanha gerada e a recomendação de criadores. Etapa 1 de 2.">Criar campanha</Title>
       {agency && clients.data?.clients.length === 0 && <p className="np np-warn">Cadastre um cliente antes de criar a campanha: <a className="link" href="/clientes">Meus clientes</a>.</p>}
       <CampaignFormView agency={agency} clients={clients.data?.clients} opts={meta.data.options} defaults={emptyCampaign(def.data)} submitLabel="Gerar campanha" onCancel={() => router.push('/campanhas')}

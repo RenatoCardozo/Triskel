@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { brl } from '@/lib/format'
 import type { ProposalListItem } from '@/lib/types'
 import { useDashboard, useMe } from '@/hooks/queries'
 import { CompleteBanner, ProfileSummary } from '@/components/ProfileSummary'
@@ -15,7 +16,7 @@ export default function Painel() {
   const u = me.data, x = d.data
   const first = u.name.split(' ')[0]
   const href = (a: { kind: string; id: string }) => (a.kind === 'delivery' ? `/entregas/${a.id}` : a.kind === 'contract' ? `/contratos/${a.id}` : `/contatos/${a.id}`)
-  const cta = (a: { kind: string; title: string }) => (a.kind === 'delivery' ? (u.role === 'CREATOR' ? 'Enviar entrega' : 'Revisar') : /pagar/i.test(a.title) ? 'Pagar' : /assinar/i.test(a.title) ? 'Assinar' : 'Responder')
+  const cta = (a: { kind: string; title: string }) => (a.kind === 'delivery' ? (u.role === 'CREATOR' ? 'Enviar entrega' : 'Revisar') : /aceitou/i.test(a.title) ? 'Revisar contrato' : /pagar/i.test(a.title) ? 'Pagar' : /assinar/i.test(a.title) ? 'Assinar' : 'Responder')
   const counts = props.data?.counts
   return (
     <div className="space-y-4">
@@ -27,6 +28,12 @@ export default function Painel() {
         </div>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">{x.kpis.map((k) => <Kpi key={k.label} value={k.value} label={k.label} hint={k.hint} />)}</div>
+          {u.role !== 'CREATOR' && (
+            <div className="card flex items-center justify-between gap-3">
+              <div><p className="text-[13px] text-[#4c5dca]">Saldo da carteira</p><b className="text-[22px] font-black text-[#4c5dca]">{brl(x.wallet.balanceCents)}</b></div>
+              <Link href="/pagamentos/adicionar" className="btn btn-primary">+ Adicionar saldo</Link>
+            </div>
+          )}
           {x.reviewsPending > 0 && (
             <section className="rounded-[20px] bg-gradient-to-br from-mint to-teal-2 p-4 text-white">
               <h2 className="text-lg font-extrabold !text-white">Avalie suas parcerias</h2>

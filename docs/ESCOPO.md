@@ -199,3 +199,14 @@ Não implementado porque não existe no protótipo:
 ## 10. Limitações do ambiente
 
 Docker: o daemon sobe, mas o registro (`registry-1.docker.io`) é bloqueado; as imagens não puderam ser baixadas e `docker compose up` não foi executado aqui. MySQL real indisponível; usado **MariaDB 10.11** (apt) como banco de testes de integração (Prisma `provider = "mysql"`, adaptador `@prisma/adapter-mariadb`).
+
+## Fidelidade ao protótipo e ao Figma (revisão de novembro/2026)
+
+O front foi revisado tela a tela contra o protótipo HTML e o Figma (capturas lado a lado a 412 px).
+
+- **Home, login e cadastro** seguem as medidas do Figma. As telas usam um "palco" de 412 px cujas medidas escalam com a largura (`front/src/components/Stage.tsx`); no desktop o palco cresce até 560 px e fica centralizado.
+- **Cabeçalho e menu**: cabeçalho de 120 px com logo e botão hambúrguer; gaveta de 247 px com avatar, ID mascarado, submenu Perfil e selo de mensagens novas em Contatos. Não há barra de navegação inferior.
+- **Fidelidade deliberada** (cópia do Figma, podem ser mudados a pedido): botão do cadastro com o texto "Entrar"; terceira coluna do endereço rotulada "Cidade" com "Brasil" (somente leitura, não enviada); "Politica de privacidade" sem acento no rodapé; chip "Tipo de Conteúdo" repetido na faixa de filtros; link "Esqueci minha senha" em turquesa claro (contraste baixo).
+- **Formulário de contato da home** usa o mesmo endpoint `POST /contact` (assunto "Dúvida sobre a plataforma", perfil "Ainda não tenho conta").
+- **Dados de demonstração**: o seed gera foto e capa no estilo do protótipo (verde-água para criadores, índigo para comércios, laranja para agências).
+- **Painéis**: indicadores com os rótulos e dicas do protótipo (ex.: "Campanha ativa · Entrega em 25/11", "Propostas enviadas · 1 respondeu"), cartão de saldo no painel de comércio/agência.
